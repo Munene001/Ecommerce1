@@ -252,6 +252,7 @@
       width: 100%;
       padding-left: 13px;
       width: calc(100% - 13px);
+      z-index: -1;
       
       
     
