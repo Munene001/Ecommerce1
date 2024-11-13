@@ -2,9 +2,12 @@
   import Header from "$lib/header.svelte";
   import coImage from "$lib/images/ecomabout.jpg?enhanced";
   import Icon from "@iconify/svelte";
+  import Preefooter from "$lib/prefooter.svelte";
+  import Navigationbar from "$lib/navigationbar.svelte";
 </script>
 
 <Header />
+<Navigationbar/>
 <div class="contactuno">
   <enhanced:img src={coImage} alt="background image" class="back-img">
   </enhanced:img>
@@ -78,6 +81,7 @@
     referrerpolicy="no-referrer-when-downgrade"
   ></iframe>
 </div>
+<Preefooter/>
 
 <style>
   :global(body) {
@@ -245,8 +249,10 @@
   }
   .location {
     padding: 0px 13px;
+    margin-bottom: 7px;
+    
   }
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .contactuno {
       height: 128px;
     }
@@ -308,6 +314,9 @@
     .hours {
       margin-top: 35px;
       margin-bottom: 20px;
+    }
+    .location{
+      margin-bottom: 15px;
     }
   }
 </style>

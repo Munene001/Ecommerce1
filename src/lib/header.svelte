@@ -365,7 +365,7 @@
     .pops {
       display: none;
     }
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .shopnow {
         height: 56px;
         text-align: center;

@@ -3,9 +3,12 @@
   import bgImage from "$lib/images/ecomabout3.jpg?enhanced";
   import cgImage from "$lib/images/ecomabout2.jpg?enhanced";
   import Icon from "@iconify/svelte";
+  import Preefooter from "$lib/prefooter.svelte";
+  import Navigationbar from "$lib/navigationbar.svelte";
 </script>
 
 <Header />
+<Navigationbar/>
 <div class="aboutuno">
   <enhanced:img src={bgImage} alt="background image" class="background-img">
   </enhanced:img>
@@ -77,6 +80,7 @@
   </enhanced:img></div>
   
 </div>
+<Preefooter/>
 
 <style>
   :global(body) {
@@ -210,7 +214,7 @@
     display: flex;
     flex-direction: row;
     padding: 0 13px;
-    border-bottom: 2px solid rgba(128, 128, 128, 0.2);
+    margin-bottom: 25px;
     
 
   }
@@ -237,7 +241,7 @@
    
 
   }
-  @media (max-width: 640px){
+  @media (max-width: 768px){
     .aboutuno{
       height: 124px;
       box-sizing: border-box;
