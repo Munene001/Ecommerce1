@@ -54,6 +54,10 @@
         label: "Contact",
         url: "/contact",
       },
+      {
+        label: "whatsapp",
+        url: "https://wa.me/0715067768"
+      }
     ];
     const sidecategories = [
       {

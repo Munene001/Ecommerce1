@@ -4,6 +4,7 @@
   import Icon from "@iconify/svelte";
   import Preefooter from "$lib/prefooter.svelte";
   import Navigationbar from "$lib/navigationbar.svelte";
+  import Footer from "$lib/footer.svelte";
 </script>
 
 <Header />
@@ -82,6 +83,7 @@
   ></iframe>
 </div>
 <Preefooter/>
+<Footer/>
 
 <style>
   :global(body) {
@@ -290,7 +292,7 @@
     }
     .input input {
       width: 100%;
-      border-radius: 5px;
+      border-radius: 1px;
     }
     .inputmid input {
       width: 100%;

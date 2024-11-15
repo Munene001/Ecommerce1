@@ -5,6 +5,7 @@
   import Icon from "@iconify/svelte";
   import Preefooter from "$lib/prefooter.svelte";
   import Navigationbar from "$lib/navigationbar.svelte";
+  import Footer from "$lib/footer.svelte";
 </script>
 
 <Header />
@@ -81,6 +82,7 @@
   
 </div>
 <Preefooter/>
+<Footer/>
 
 <style>
   :global(body) {
