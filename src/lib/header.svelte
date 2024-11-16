@@ -116,13 +116,13 @@
         <div class="dropdown">
           <button class="category" on:click={toggleDropdown}
             >{selectedCategory}
-            <Icon icon="material-symbols-light:arrow-drop-down" />
+            <Icon icon="material-symbols-light:arrow-drop-down" style="font-size:16px"/>
           </button>
           {#if showDropdown}
             <div class="dropdown-content">
               {#each categories as category}
                 <div>
-                  <button
+                  <button class="but"
                     on:click={() => {
                       selectedCategory = category;
                       showDropdown = false;
@@ -188,7 +188,7 @@
   </div>
   <div class="mainheadermobile">
     <button class="menu" on:click={(e) => (showModal = true)}
-      ><Icon icon="mdi-light:menu" /></button
+      ><Icon icon="mdi-light:menu"/></button
     >
   
     <div class="head"><h1>Cloyta</h1></div>
@@ -287,7 +287,7 @@
       width: 100%;
       border: 1px solid #ccc;
       border-radius: 4px;
-      overflow: hidden;
+      
     }
   
     input[type="text"] {
@@ -303,14 +303,33 @@
     .dropdown {
       flex: 0 0 28%;
       position: relative;
-      height: 100%;
+      height: 100%;  
+      margin-top: 13px;
+      margin-left: 20px;
+      
     }
     .category {
       cursor: pointer;
+      font-size: 14px;
+      line-height: 24px;
+      
     }
     .dropdown-content {
       min-width: 160px;
       z-index: 20;
+      align-items: flex-end;
+    }
+    .but{
+      width: 133px;
+      border: none;
+      background-color: #ffffff;
+      text-align: justify;
+      font-size: 14px;
+      line-height: 26px;
+    }
+    
+    .but:hover{
+      background-color: rgb(74, 74, 238);
     }
     .search-icon {
       margin-right: 10px;

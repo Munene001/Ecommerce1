@@ -1,13 +1,26 @@
 <script>
   import Icon from "@iconify/svelte";
+  import { goto } from "$app/navigation";
+
+  function navigateToSearch(){
+    goto("/search");
+  }
+  function navigateToShop(){
+    goto("/shop");
+  }
+  function navigateToAccount(){
+    goto("/account");
+  }
+  
+
 </script>
 
 <div class="navbar">
-  <button
+  <button on:click={navigateToShop}
     ><Icon icon="streamline:store-1" style="font-size:27px" /><span>shop</span
     ></button
   >
-  <button
+  <button on:click={navigateToSearch}
     ><Icon icon="iconamoon:search-thin" style="font-size:28px" /><span
       >search</span
     ></button
@@ -18,7 +31,7 @@
       style="font-size:29px;"
     /><span>filter</span></button
   >
-  <button
+  <button on:click={navigateToAccount}
     ><Icon icon="bi:person" style="font-size:28px" /><span>account</span
     ></button
   >
