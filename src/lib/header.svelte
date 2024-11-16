@@ -287,6 +287,8 @@
       width: 100%;
       border: 1px solid #ccc;
       border-radius: 4px;
+      background-color: #f0f0f0;
+      
       
     }
   
@@ -298,20 +300,23 @@
       box-sizing: border-box;
       outline: none;
       border-right: 1px solid #ccc;
+      background-color: #f0f0f0;
     }
   
     .dropdown {
       flex: 0 0 28%;
       position: relative;
       height: 100%;  
-      margin-top: 13px;
-      margin-left: 20px;
+      margin-top: 16px;
+      margin-left: 19px;
       
     }
     .category {
       cursor: pointer;
       font-size: 14px;
       line-height: 24px;
+      border: none;
+      background-color: transparent;
       
     }
     .dropdown-content {
@@ -320,7 +325,7 @@
       align-items: flex-end;
     }
     .but{
-      width: 133px;
+      width: 136px;
       border: none;
       background-color: #ffffff;
       text-align: justify;
