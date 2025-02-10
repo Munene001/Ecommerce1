@@ -1,5 +1,30 @@
 <script>
     import Header from "$lib/header.svelte";
-    </script>
+    import ProductCard from "$lib/productcard.svelte";
   
-    <Header/>
+    // Ensure data.products is always defined
+    export let data = { products: [] };
+  
+    // Ensure products is always an array
+    let products = data.products || [];
+  </script>
+  
+  <Header />
+  
+  {#if products.length > 0}
+    <div class="products-container">
+      {#each products as product}
+        <ProductCard {product} />
+      {/each}
+    </div>
+  {:else}
+    <p>No products found.</p>
+  {/if}
+  
+  <style>
+    .products-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  </style>
