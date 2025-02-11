@@ -1,6 +1,7 @@
 <script>
     import Header from "$lib/header.svelte";
-    import ProductCard from "$lib/productcard.svelte";
+    import Productminiview from "../../lib/productminiview.svelte";
+  
   
     // Ensure data.products is always defined
     export let data = { products: [] };
@@ -14,7 +15,7 @@
   {#if products.length > 0}
     <div class="products-container">
       {#each products as product}
-        <ProductCard {product} />
+        <Productminiview {product} />
       {/each}
     </div>
   {:else}
