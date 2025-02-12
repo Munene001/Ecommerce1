@@ -4,7 +4,7 @@
   
   
     // Ensure data.products is always defined
-    export let data = { products: [] };
+    export let data;
   
     // Ensure products is always an array
     let products = data.products || [];

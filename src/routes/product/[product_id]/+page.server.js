@@ -1,6 +1,9 @@
 export async function load({params, fetch}){
-    const{id} = params;
-    const API_URL = 'http://27.0.0.1:8001/api/product/${id}/';
+    const{product_id} = params;
+    
+
+    const API_URL = `http://127.0.0.1:8000/api/product/${product_id}/`;
+
 
     try {
         const response = await fetch(API_URL);
@@ -8,13 +11,13 @@ export async function load({params, fetch}){
         if (!response.ok){
             throw new Error("Failed to fetch product");
         }
-        const product = await response.json();
-        return {product};
+        const data = await response.json();
+        return {product:data.product || []};
 
         
     } catch (error) {
         console.error("Error loading product:", error);
-        return { product: null };
+        return { product: null};
         
     }
 

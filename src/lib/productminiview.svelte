@@ -2,10 +2,14 @@
   import {goto} from "$app/navigation";
 
   function openProductPage(){
-    goto("/product/${product.id}");
-  }
+    if(!product.product_id){
+      console.error('Product id is missing');
+      return;
+    }
+  goto(`/product/${product.product_id}`);
+}
   export let product = {
-    id:"",
+    
     productname: "",
     price: 0,
     images: [],
@@ -15,14 +19,15 @@
   let { productname, price, images = [] } = product;
 </script>
 
-<div class="product-card" onclick={openProductPage}>
+<div class="product-card" onclick={openProductPage} onkeydown="{(e) => (e.key === 'Enter' || e.key === '') && openProductPage()}" role="button" 
+  tabindex="0">
   <!-- Product Name & Price -->
   <h2 class="product-name">{productname}</h2>
   <p class="price">Price: KES {price}</p>
 
   <div class="image-gallery">
     {#each images as img}
-      <img src={img.imageurl} alt="Product Image" class="product-image" />
+      <img src={img.imageurl} alt={productname} class="product-image" />
     {/each}
   </div>
 </div>
