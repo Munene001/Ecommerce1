@@ -1,66 +1,180 @@
 <script>
-  import {goto} from "$app/navigation";
+  import { goto } from "$app/navigation";
 
-  function openProductPage(){
-    if(!product.product_id){
-      console.error('Product id is missing');
-      return;
-    }
-  goto(`/product/${product.product_id}`);
-}
   export let product = {
-    
+    product_id: "",
     productname: "",
     price: 0,
     images: [],
+    discountprice: 0,
   };
 
-  // Destructure with default values to avoid errors
-  let { productname, price, images = [] } = product;
+  let { images = [], productname, price, discountprice } = product;
+  let currentIndex = 0;
+  let container;
+  let containerWidth = 210; // Default, updates dynamically
+
+  function handleMouseMove(event) {
+    let sectionWidth = containerWidth / images.length; // Divide image into equal parts
+    let index = Math.floor(event.offsetX / sectionWidth); // Get section index
+    if (index !== currentIndex && index < images.length) {
+      currentIndex = index;
+    }
+  }
+
+  function handleResize(event) {
+    containerWidth = event.target.clientWidth;
+  }
+
+  function handleTouch(event) {
+    let startX = event.touches[0].clientX;
+    event.target.addEventListener(
+      "touchend",
+      (e) => {
+        let endX = e.changedTouches[0].clientX;
+        let diff = startX - endX;
+
+        if (diff > 50) {
+          if (currentIndex < images.length - 1) currentIndex++;
+        } else if (diff < -50) {
+          if (currentIndex > 0) currentIndex--;
+        }
+      },
+      { once: true }
+    );
+  }
+
+  function openProductPage() {
+    if (!product.product_id) {
+      console.error("Product id is missing");
+      return;
+    }
+    goto(`/product/${product.product_id}`);
+  }
 </script>
-
-<div class="product-card" onclick={openProductPage} onkeydown="{(e) => (e.key === 'Enter' || e.key === '') && openProductPage()}" role="button" 
-  tabindex="0">
-  <!-- Product Name & Price -->
-  <h2 class="product-name">{productname}</h2>
-  <p class="price">Price: KES {price}</p>
-
-  <div class="image-gallery">
-    {#each images as img}
-      <img src={img.imageurl} alt={productname} class="product-image" />
-    {/each}
+<div class="productcontainer">
+<div
+  class="miniproduct"
+  onclick={openProductPage}
+  onkeydown={(e) => (e.key === "Enter" || e.key === "") && openProductPage()}
+  tabindex="0"
+  role="button"
+>
+  <div
+    class="image-container"
+    onmousemove={handleMouseMove}
+    onresize={handleResize}
+    ontouchstart={handleTouch}
+    bind:this={container}
+    role="img"
+  >
+    <img src={images[currentIndex].imageurl} alt="Image {currentIndex + 1}" />
+    <div class="indicators">
+      {#each images as _, i}
+        <div class="indicator {i === currentIndex ? 'active' : ''}"></div>
+      {/each}
+    </div>
   </div>
+  <div class="productname">{productname}</div>
+  <div class=" price">
+    {#if discountprice}<div class="originalprice"><i><span style="font-size: 12px;">Ksh</span>{price}</i></div>
+      <div class="discountedprice"><span style="font-size: 14px;">Ksh</span>{discountprice}</div>
+      {:else}
+      <div class="finalprice"> <span style="font-size: 14px;">Ksh</span>{price}</div>
+      {/if}
+  </div>
+</div>
 </div>
 
 <style>
-  .product-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    max-width: 400px;
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-  }
+  :global(body) {
+      margin: 0;
+      padding: 0;
+    }
 
-  .product-name {
-    font-size: 1.4rem;
-    font-weight: bold;
-  }
-
-  .price {
-    color: #e63946;
-    font-weight: bold;
-  }
-
-  .image-gallery {
+  .miniproduct {
+    height: 390px;
+    width: 237px;
     display: flex;
-    gap: 10px;
-    margin-top: 10px;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .image-container {
+    width: 100%;
+    max-width: 210px;
+    height: 310px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid rgb(248, 242, 242);
   }
 
-  .product-image {
-    width: 100px;
-    height: 100px;
+  .image-container img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 4px;
+  }
+  .indicators {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    gap: 2px;
+  }
+
+  .indicator {
+    flex: 1;
+    height: 4px; /* Thin bar */
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: background-color 0.3s;
+  }
+
+  .indicator.active {
+    background-color: black; /* Active image indicator */
+  }
+  .productname {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 18px;
+    margin-top: 8px;
+    font-family: Jost, sans-serif;
+  }
+  .price {
+    line-height: 22.5px;
+    font-weight: 700;
+    font-size: 17px;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+  }
+  .originalprice{
+    text-decoration: line-through;
+    font-size: 15px;
+    color: gray;
+    
+  }
+  @media(max-width:768px){
+    .productcontainer{
+      display: flex;
+      padding: 8px
+
+    }
+    .miniproduct{
+      width: calc(50vw - 22px);
+      height: 370px;
+      
+      
+
+    }
+    .image-container{
+      width: 98%;
+      height:65%;
+    }
+
   }
 </style>
