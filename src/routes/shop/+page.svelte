@@ -1,6 +1,7 @@
 <script>
     import Header from "$lib/header.svelte";
     import Productminiview from "../../lib/productminiview.svelte";
+    import Navigationbar from "../../lib/navigationbar.svelte";
   
   
     // Ensure data.products is always defined
@@ -21,6 +22,7 @@
   {:else}
     <p>No products found.</p>
   {/if}
+  <Navigationbar/>
   
   <style>
     .products-container {

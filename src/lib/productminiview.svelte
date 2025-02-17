@@ -8,6 +8,7 @@
     images: [],
     discountprice: 0,
   };
+ 
 
   let { images = [], productname, price, discountprice } = product;
   let currentIndex = 0;
@@ -68,7 +69,7 @@
     bind:this={container}
     role="img"
   >
-    <img src={images[currentIndex].imageurl} alt="Image {currentIndex + 1}" />
+    <img src={ images.length> 0 ? images[currentIndex].imageurl : [] } alt="Image {currentIndex + 1}" />
     <div class="indicators">
       {#each images as _, i}
         <div class="indicator {i === currentIndex ? 'active' : ''}"></div>
@@ -91,6 +92,10 @@
       margin: 0;
       padding: 0;
     }
+    .productcontainer{
+      padding-left: 28px;
+      
+    }
 
   .miniproduct {
     height: 390px;
@@ -107,16 +112,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: black;
+    
     overflow: hidden;
     cursor: pointer;
-    border: 1px solid rgb(248, 242, 242);
+    background-color: transparent;
   }
 
   .image-container img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: scale-down;
   }
   .indicators {
     position: absolute;
@@ -161,7 +166,9 @@
   @media(max-width:768px){
     .productcontainer{
       display: flex;
-      padding: 8px
+      padding-left: 8px;
+      padding-right: 8px;
+
 
     }
     .miniproduct{
