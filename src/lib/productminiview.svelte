@@ -9,6 +9,7 @@
     discountprice: 0,
   };
  
+ 
 
   let { images = [], productname, price, discountprice } = product;
   let currentIndex = 0;
