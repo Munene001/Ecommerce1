@@ -3,6 +3,9 @@
   import Productminiview from "../../lib/productminiview.svelte";
   import Navigationbar from "../../lib/navigationbar.svelte";
   import { onMount } from "svelte";
+  import nouislider from "nouislider";
+  import "nouislider/dist/nouislider.css";
+
 
   export let data;
   let products = data.products || [];
@@ -17,10 +20,26 @@
   ];
   let minPrice = 0;
   let maxPrice = 20000;
+  let priceMinLimit = 0;
+  let priceMaxLimit = 10000;
 
   let selectedCategories = [];
   let selectedSizes = [];
   let selectedColors = [];
+
+  const colorMap = {
+    White: "#FFFFFF",
+    Red: "#FF0000",
+    Blue: "#0000FF",
+    Black: "#000000",
+    Green: "#008000",
+    Gray: "#808080",
+    Yellow: "#FFFF00",
+    Pink: "#FFC1CC",
+    Purple: "#800080",
+    NavyBlue: "#000080",
+    Cream: "#FFFDD0"
+  };
 
   onMount(async () => {
     try {
@@ -44,7 +63,33 @@
         { category_id: "category-uuid-7", categoryname: "Kids" }
       ];
     }
+    const slider = document.getElementById("price-slider");
+    if(slider){nouislider.create(slider,{
+      start: [minPrice, maxPrice],
+      connect:true,
+      range:{
+        min:priceMinLimit,
+        max:priceMaxLimit,
+      },
+      step:50,
+      behaviour:"drag",
+    });
+    slider.noUiSlider.on("update", (values,handle) =>{
+      minPrice = Math.round(values[0]);
+      maxPrice = Math.round(values[1]);
+      
+       
+    });
+  }else{
+      console.log("Slider not found");
+    }
+    
   });
+  function applyPriceFilters(){
+    applyFilters();
+    return;
+  }
+  
 
   async function applyFilters() {
     const filterData = {
@@ -79,7 +124,9 @@
       products = [];
       totalResults = 0;
     }
+
   }
+  
 
   function debounce(func, wait) {
     let timeout;
@@ -90,11 +137,6 @@
   }
   const debounceApplyFilters = debounce(applyFilters, 300);
 
-  function updatePrice(event, type) {
-    if (type === "min") minPrice = +event.target.value;
-    if (type === "max") maxPrice = +event.target.value;
-    debounceApplyFilters();
-  }
 </script>
 
 <Header />
@@ -116,21 +158,11 @@
     </div>
     <div class="filtergroup">
       <h3>Price</h3>
-      <input
-        type="range"
-        min="0"
-        max="20000"
-        value={minPrice}
-        oninput={(e) => updatePrice(e, 'min')}
-      />
-      <input
-        type="range"
-        min="0"
-        max="20000"
-        value={maxPrice}
-        oninput={(e) => updatePrice(e, 'max')}
-      />
-      <p>{minPrice} - {maxPrice} KSH</p>
+      <div class="pricer"><p>price: {minPrice} Ksh - {maxPrice} Ksh</p>
+      <button class = "bt" onclick={applyPriceFilters}>Filter Price</button></div>
+
+      <div id="price-slider" class="range-slider"></div>
+      
     </div>
     <div class="filtergroup">
       <h3>Colors</h3>
@@ -141,7 +173,12 @@
             value={color}
             bind:group={selectedColors}
             onchange={applyFilters}
+            
+            
+            
           />
+          
+          
           {color}
         </label>
       {/each}
@@ -149,7 +186,7 @@
     <div class="filtergroup">
       <h3>Sizes</h3>
       {#each sizes as size}
-        <label>
+        <label class="color-checkbox">
           <input
             type="checkbox"
             value={size}
@@ -180,9 +217,18 @@
     display: flex;
     flex-direction: row;
     padding: 20px;
+    max-height: 170vh;
+    
+    
+   
   }
   .filter {
-    flex: 0 0 30%;
+    flex: 0 0 20%;
+    position: sticky;
+  
+    
+   
+  
   }
   .filtergroup {
     margin-bottom: 15px;
@@ -192,9 +238,27 @@
     margin: 5px 0;
   }
   .products-container {
-    flex: 0 0 70%;
+    flex: 0 0 80%;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    
   }
+  .pricer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .bt{
+    font-size: 12px;
+    height: auto;
+    padding:0px 7px;
+    margin: 0;
+    line-height: 1;
+    height: 24px;
+    align-self: center;
+
+  }
+  
 </style>
