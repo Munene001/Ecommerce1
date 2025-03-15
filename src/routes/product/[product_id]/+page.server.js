@@ -1,5 +1,6 @@
 export async function load({params, fetch}){
     const{product_id} = params;
+   
     
 
     const API_URL = `http://127.0.0.1:8000/api/product/${product_id}/`;

@@ -99,8 +99,8 @@
     }
 
   .miniproduct {
-    height: 390px;
-    width: 237px;
+    height: 410px;
+    width: 207px;
     display: flex;
     flex-direction: column;
     justify-content: center;
