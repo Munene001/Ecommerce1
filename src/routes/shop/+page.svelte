@@ -1,63 +1,36 @@
 <script>
   import Header from "$lib/header.svelte";
-  import Productminiview from "../../lib/productminiview.svelte";
-  import Navigationbar from "../../lib/navigationbar.svelte";
-  import { onMount } from "svelte";
-  import nouislider from "nouislider";
-  import "nouislider/dist/nouislider.css";
-  import "iconify-icon";
+  import Productminiview from "$lib/productminiview.svelte";
+  import Navigationbar from "$lib/navigationbar.svelte";
   import Preefooter from "$lib/prefooter.svelte";
   import Footer from "$lib/footer.svelte";
-  
-  
+  import Icon from "@iconify/svelte";
+  import Filter from "../../lib/filter.svelte";
+  import { onMount } from "svelte";
+
+  let filterVisible = false;
+  function toggleFilter() {
+    filterVisible = !filterVisible;
+  }
 
   export let data;
-  let products = data.products || [];
-  let totalResults = products.length;
+  let products = [];
+  let totalResults = 0;
   let shopId = data.shopId || "shop-uuid-1";
 
+  // Pagination state
+  let currentPage = 1;
+  let totalPages = 1;
+  let loading = false;
+  let activeFilters = {}; // Track current filters
+
   let categories = [];
-  let sizes = ["S", "M", "L", "XL", "XXL"];
-  let colors = [
-    "White",
-    "Red",
-    "Blue",
-    "Black",
-    "Green",
-    "Gray",
-    "Yellow",
-    "Pink",
-    "Purple",
-    "NavyBlue",
-    "Cream",
-  ];
-  let minPrice = 0;
-  let maxPrice = 20000;
-  let priceMinLimit = 0;
-  let priceMaxLimit = 10000;
 
-  let selectedCategories = [];
-  let selectedSizes = [];
-  let selectedColors = [];
-
-  const colorMap = {
-    White: "#FFFFFF",
-    Red: "#FF0000",
-    Blue: "#0000FF",
-    Black: "#000000",
-    Green: "#008000",
-    Gray: "#808080",
-    Yellow: "#FFFF00",
-    Pink: "#FFC1CC",
-    Purple: "#800080",
-    NavyBlue: "#000080",
-    Cream: "#FFFDD0",
-  };
-
+  // Fetch categories and initial products on mount
   onMount(async () => {
-    
     try {
-      const response = await fetch(
+      // Fetch categories
+      const categoriesResponse = await fetch(
         `http://127.0.0.1:8000/api/products/categories?shop_id=${shopId}`,
         {
           method: "GET",
@@ -66,11 +39,13 @@
           },
         }
       );
-      if (!response.ok) throw new Error("Failed to fetch categories");
-      categories = await response.json();
+      if (!categoriesResponse.ok) throw new Error("Failed to fetch categories");
+      categories = await categoriesResponse.json();
+      
+      // Fetch initial products with pagination
+      await fetchProducts({}, 1);
     } catch (error) {
-      console.error("Error fetching categories:", error);
-      // Fallback to hardcoded values
+      console.error("Error initializing:", error);
       categories = [
         { category_id: "category-uuid-1", categoryname: "Men" },
         { category_id: "category-uuid-2", categoryname: "Women" },
@@ -80,162 +55,133 @@
         { category_id: "category-uuid-7", categoryname: "Kids" },
       ];
     }
-    const slider = document.getElementById("price-slider");
-    if (slider) {
-      nouislider.create(slider, {
-        start: [minPrice, maxPrice],
-        connect: true,
-        range: {
-          min: priceMinLimit,
-          max: priceMaxLimit,
-        },
-        step: 50,
-        behaviour: "drag",
-      });
-      slider.noUiSlider.on("update", (values, handle) => {
-        minPrice = Math.round(values[0]);
-        maxPrice = Math.round(values[1]);
-      });
-    } else {
-      console.log("Slider not found");
-    }
   });
-  function applyPriceFilters() {
-    applyFilters();
-    return;
+
+  // Handle filter changes
+  function handleFilter(event) {
+    const filterData = event.detail;
+    activeFilters = filterData;
+    currentPage = 1; // Reset to first page when filters change
+    fetchProducts(filterData, 1);
   }
 
-  async function applyFilters() {
-    const filterData = {
-      categoryUuids: selectedCategories,
-      sizes: selectedSizes,
-      colors: selectedColors,
-      minPrice,
-      maxPrice,
-    };
-    console.log("Filter Data:", filterData);
-
+  // Universal product fetching function with pagination
+  async function fetchProducts(filterData = {}, page = 1) {
     try {
+      loading = true;
       const response = await fetch(
-        "http://127.0.0.1:8000/api/products/filter",
+        `http://127.0.0.1:8000/api/products/filter?page=${page}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify(filterData),
+          body: JSON.stringify({
+            ...filterData,
+            page: page
+          }),
         }
       );
-      if (!response.ok) {
-        console.error("Filter request failed:", response.status);
-        products = [];
-        totalResults = 0;
-        return;
-      }
+      
+      if (!response.ok) throw new Error("Failed to fetch products");
+      
       const result = await response.json();
       products = result.products;
       totalResults = result.total;
+      totalPages = result.last_page || 1;
+      currentPage = page;
     } catch (error) {
-      console.error("Error applying filters:", error);
+      console.error("Error fetching products:", error);
       products = [];
       totalResults = 0;
+      totalPages = 1;
+    } finally {
+      loading = false;
     }
   }
 
-  function debounce(func, wait) {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), wait);
-    };
+  // Change page
+  function changePage(page) {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+    fetchProducts(activeFilters, page);
   }
-  const debounceApplyFilters = debounce(applyFilters, 300);
 </script>
 
 <Header />
+
 <div class="shoping">
-  <div class="filter">
-    <div class="filtergroup">
-      <h3>Categories</h3>
-      {#each categories as category}
-        <label>
-          <input
-            type="checkbox"
-            value={category.category_id}
-            bind:group={selectedCategories}
-            onchange={applyFilters}
-          />
-          {category.categoryname}
-        </label>
-      {/each}
-    </div>
-    <div class="filtergroup">
-      <h3>Price</h3>
-      <div class="pricer">
-        <p>price: {minPrice} Ksh - {maxPrice} Ksh</p>
-        <button class="bt" onclick={applyPriceFilters}>Filter Price</button>
+  <!-- Filter Component -->
+  <Filter {categories} on:filter={handleFilter} bind:visible={filterVisible} />
+ 
+  <div class="main-content">
+    <div class="float">
+      <div class="product-count">
+        <Icon icon="mdi:package-variant" style = "font-size:39px"/>
+        <span>{totalResults} products found</span>
       </div>
-
-      <div id="price-slider" class="range-slider"></div>
+      <div class="flot">
+      <button onclick={toggleFilter} class="filter-btn">
+        <Icon icon="material-symbols-light:filter-list" style="font-size:39px;" />
+      </button>
+      <span>filter</span>
+      </div>
+      
     </div>
-    <div class="filtergroup" id="color">
-      <h3>Colors</h3>
-      {#each colors as color}
-        <label
-          class="color-swatch"
-          style="background-color: {colorMap[color]};"
+    
+    <!-- Product count display -->
+    
+    
+    <!-- Product List -->
+    {#if loading}
+      <div class="loading">Loading...</div>
+    {:else if products.length > 0}
+      <div class="products-container">
+        {#each products as product (product.product_id)}
+          <Productminiview {product} />
+        {/each}
+      </div>
+      
+      <!-- Pagination Controls -->
+      <div class="pagination">
+        <button 
+          class="pagination-button" 
+          onclick={() => changePage(currentPage - 1)}
+          disabled={currentPage === 1}
         >
-          <input
-            type="checkbox"
-            value={color}
-            bind:group={selectedColors}
-            onchange={applyFilters}
-          />
-          <div class="check">
-            <span
-              class="checkmark
-              {color === 'Cream' || color === 'White' ? 'black-icon' : ''}"
+          Previous
+        </button>
+        
+        {#each Array(totalPages) as _, i}
+          {#if i + 1 === currentPage}
+            <span class="current-page">{i + 1}</span>
+          {:else if i + 1 >= currentPage - 2 && i + 1 <= currentPage + 2}
+            <button 
+              class="pagination-button" 
+              onclick={() => changePage(i + 1)}
             >
-              <b
-                ><iconify-icon icon="material-symbols-light:check"
-                ></iconify-icon></b
-              >
-            </span>
-            <span class="color-name">{color}</span>
-          </div>
-        </label>
-      {/each}
-    </div>
-    <div class="filtergroup">
-      <h3>Sizes</h3>
-      {#each sizes as size}
-        <label class="color-checkbox">
-          <input
-            type="checkbox"
-            value={size}
-            bind:group={selectedSizes}
-            onchange={applyFilters}
-          />
-          {size}
-        </label>
-      {/each}
-    </div>
+              {i + 1}
+            </button>
+          {/if}
+        {/each}
+        
+        <button 
+          class="pagination-button" 
+          onclick={() => changePage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div>
+    {:else}
+      <p>No products found.</p>
+    {/if}
   </div>
-
-  {#if products.length > 0}
-    <div class="products-container">
-      {#each products as product (product.product_id)}
-        <Productminiview {product} />
-      {/each}
-    </div>
-  {:else}
-    <p>No products found.</p>
-  {/if}
 </div>
-<Navigationbar />
-<Preefooter/>
-<Footer/>
+
+<Navigationbar {filterVisible} toggleFilterCallback={toggleFilter} />
+<Preefooter />
+<Footer />
 
 <style>
   .shoping {
@@ -243,165 +189,116 @@
     flex-direction: row;
     padding: 10px;
     box-sizing: border-box;
-   
   }
-  .filter {
-    flex: 0 0 22%;
-    position: sticky;
-    align-self: flex-start;
+  
+  .main-content {
+    flex: 1;
+  }
+  .float{
+    padding: 10px 13px;
+  }
+  
+  .flot {
+    display: none;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .product-count {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
     
   }
-  .filtergroup {
-    display: flex;
-    flex-direction: column;
-   
-  }
-  .filtergroup label {
-    display: block;
-    margin: 5px 0;
-  }
+
   .products-container {
-    flex: 0 0 78%;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 15px;
-    
     max-height: 976px;
     overflow-y: auto;
     box-sizing: border-box;
     scroll-behavior: smooth;
-    
-    
+  }
   
-  }
- 
-  
-
-/* Webkit browsers (Chrome, Safari, Edge) */
-.products-container::-webkit-scrollbar {
-  width: 13px;
-}
-  
-.pricer {
+  .pagination {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    margin-top: -15px;
-  }
-  .bt {
-    font-size: 12px;
-    height: auto;
-    padding: 0px 7px;
-    margin: 0;
-    line-height: 1;
-    height: 24px;
-    align-self: center;
-  }
-  #price-slider {
-    height: 5px;
-  }
-  .range-slider {
-    margin: 0px 10px;
-    background-color: #ee403d;
-  }
-  :global(#price-slider .noUi-connect) {
-    background: #ee403d;
-
-    /* Red color */
-  }
-  :global(#price-slider .noUi-base) {
-    height: 3px;
-    background: #d3d3d3;
-    display: flex;
-    align-self: center;
-  }
-  :global(#price-slider .noUi-handle) {
-    border-radius: 50%;
-    border-color: #ee403d;
-    background: #ee403d;
-    cursor: pointer;
-    top: -13px !important;
-  }
-  :global(#price-slider .noUi-handle:before),
-  :global(#price-slider .noUi-handle:after) {
-    display: none;
-  }
-  #color {
-    padding-top: 8px;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-  }
-  .color-swatch input[type="checkbox"] {
-    opacity: 0;
-    position: absolute;
-  }
-
-  .color-swatch {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin: 5px;
-    cursor: pointer;
-    position: relative;
-    border: 2px solid transparent;
-    transition: border-color 0.2s ease;
+    justify-content: center;
     align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px;
+  }
+  
+  .pagination-button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .pagination-button:hover:not([disabled]) {
+    background: #f0f0f0;
+  }
+  
+  .pagination-button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .current-page {
+    padding: 5px 10px;
+    background: #ee403d;
+    color: white;
+    border-radius: 4px;
   }
 
-  .color-swatch .checkmark {
-    display: none;
-  }
-  .check {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    width: 10px;
-  }
-
-  .color-name {
-    padding-left: 25px;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 21px;
-  }
-  .color-swatch input[type="checkbox"]:checked ~ .check .checkmark {
-    display: block;
-  }
-  .color-swatch .checkmark {
-    display: none;
-  }
-
-  .color-swatch input[type="checkbox"]:checked ~ .check .checkmark {
-    display: block;
-  }
-  iconify-icon {
-    align-self: center;
-    justify-self: center;
-  }
-  @media (max-width:768px){
-    .shoping{
+  @media (max-width: 768px) {
+    .shoping {
       padding: 0 8px;
     }
-    .filter{
-      display: none;
+    .flot{
+      display: block;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      box-sizing: border-box;
+      gap: 2px
+     
     }
-    .products-container{
-      flex: 0 0 100%;
-      display: grid;
-      max-width: 100%;
-      grid-template-columns: repeat(2,1fr);
-      gap: 2px;
+    .flot span{
+      font-size: 14px;
+    }
+    .float{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
       
     }
-  }
+    
+    
+    
+     
+    
+    .filter-btn {
+      border: none;
+      background-color: transparent;
+    }
 
-  /* Set the icon color to black for Cream and White */
+    .products-container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      max-height: none;
+      padding-top: 0px;
+    }
+    
+    .pagination {
+      flex-wrap: wrap;
+    }
+  }
 </style>

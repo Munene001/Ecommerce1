@@ -2,9 +2,19 @@
   import Icon from "@iconify/svelte";
   import { goto } from "$app/navigation";
 
+  export let filterVisible = false;
+  export let toggleFilterCallback = () =>{};
+
+  function toggleFilter(){
+    toggleFilterCallback();
+  }
+
+ 
+
   function navigateToSearch(){
     goto("/search");
   }
+  
   function navigateToShop(){
     goto("/shop");
   }
@@ -12,26 +22,27 @@
     goto("/account");
   }
   
+  
 
 </script>
 
 <div class="navbar">
-  <button on:click={navigateToShop}
+  <button onclick={navigateToShop}
     ><Icon icon="streamline:store-1" style="font-size:27px" /><span>shop</span
     ></button
   >
-  <button on:click={navigateToSearch}
+  <button onclick={navigateToSearch}
     ><Icon icon="iconamoon:search-thin" style="font-size:28px" /><span
       >search</span
     ></button
   >
-  <button
+  <button onclick={toggleFilter}
     ><Icon
       icon="material-symbols-light:filter-list"
       style="font-size:29px;"
     /><span>filter</span></button
   >
-  <button on:click={navigateToAccount}
+  <button onclick={navigateToAccount}
     ><Icon icon="bi:person" style="font-size:28px" /><span>account</span
     ></button
   >
