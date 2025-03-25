@@ -1,6 +1,7 @@
 <script>
     import Header from "$lib/header.svelte";
     import Fullviewproduct from "../../../lib/fullviewproduct.svelte";
+    
 
     export let data;
     let product = data.product;
@@ -9,6 +10,7 @@
       console.log("Product received:", product);
     }
 </script>
+<Header/>
     
   
   {#if product}

@@ -113,6 +113,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid lightgray;
     
     overflow: hidden;
     cursor: pointer;
