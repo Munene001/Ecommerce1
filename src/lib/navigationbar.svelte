@@ -2,7 +2,7 @@
   import Icon from "@iconify/svelte";
   import { goto } from "$app/navigation";
 
-  export let filterVisible = false;
+
   export let toggleFilterCallback = () =>{};
 
   function toggleFilter(){

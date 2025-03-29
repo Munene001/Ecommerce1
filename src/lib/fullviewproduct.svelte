@@ -1,6 +1,8 @@
 <script>
   import { once } from "lodash-es";
   import Icon from "@iconify/svelte";
+  import Recentlyview from "./recentlyview.svelte";
+  import Cartadd from "./cartadd.svelte";
 
   export let product = {
     productname: "",
@@ -109,6 +111,7 @@
         </button>
       </div>
     </div>
+    <div class="farleft"><Recentlyview currentProduct={product} /></div>
   </div>
 {:else}
   <p>No product available</p>
@@ -133,17 +136,18 @@
     >
   </div>
   <div class="desc-reviewctn">
-  {#if activeTab === "desc"}
-    <div>
-      {productdescriptions[0]?.short_description}
-    </div>
-  {:else if activeTab === "additional_information"}
-    <div>{productdescriptions[0]?.additional_information}</div>
-  {:else}
-    <div>Product review</div>
-  {/if}
+    {#if activeTab === "desc"}
+      <div>
+        {productdescriptions[0]?.short_description}
+      </div>
+    {:else if activeTab === "additional_information"}
+      <div>{productdescriptions[0]?.additional_information}</div>
+    {:else}
+      <div>Product review</div>
+    {/if}
   </div>
 </div>
+<Cartadd />
 
 <style>
   .product-container {
@@ -190,7 +194,7 @@
     object-fit: cover;
   }
   .action {
-    flex: 0 0 40%;
+    flex: 0 0 42%;
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -256,7 +260,7 @@
   .incart {
     background-color: black;
     color: white;
-    padding: 15px 69px;
+    padding: 15px 99px;
     font-size: 14px;
   }
   .xtra {
@@ -280,7 +284,6 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    
   }
   .desc-reviewbtn {
     border: none;
@@ -290,19 +293,66 @@
     line-height: 30px;
     color: rgb(136, 134, 134);
   }
-  .desc-reviewctn{
+  .desc-reviewctn {
     font-weight: 400;
     line-height: 24px;
     color: rgb(0, 0, 0);
-
   }
-  .desc-reviewbtn.active{
+  .desc-reviewbtn.active {
     color: black;
   }
-  .btn-section{
+  .btn-section {
     border-bottom: 1px solid lightgray;
     padding-bottom: 4px;
     display: flex;
     gap: 15px;
+  }
+  .farleft {
+    flex: 0 0 15%;
+  }
+  @media (max-width: 768px) {
+    .product-container {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 10px;
+      box-sizing: border-box;
+    }
+    .pronto {
+      flex: 0 0 100%;
+    }
+    .action {
+      flex: 0 0 100%;
+      padding: 20px 0px;
+      gap: 10px;
+    }
+    .farleft {
+      flex: 0 0 100%;
+    }
+    .check {
+      display: none;
+    }
+    .thumbnails button {
+      height: 67px;
+      width: 67px;
+
+      box-sizing: border-box;
+    }
+
+    .thumbnails button img {
+      height: 67px;
+      width: 67px;
+    }
+    .main-image {
+      width: 100%;
+      height: auto;
+      max-height: 600px;
+      object-fit: scale-down;
+    }
+    .main-image img {
+      width: 100%;
+      height: auto;
+      max-height: 600px;
+      border: 1px solid gray;
+    }
   }
 </style>

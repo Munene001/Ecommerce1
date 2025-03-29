@@ -1,5 +1,9 @@
 export async function load({params, fetch}){
     const{product_id} = params;
+    
+    
+
+   
    
     
 
