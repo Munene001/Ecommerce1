@@ -2,9 +2,11 @@
   import { goto } from "$app/navigation";
   import Icon from "@iconify/svelte";
   import { debounce, result, value } from "lodash-es";
-  import {openProductPage} from './productutil';
+  import { openProductPage } from "./productutil";
 
-  
+  function navigateToAccount(){
+    goto("/account");
+  }
 
   let showModal = false;
   let categories = [
@@ -20,7 +22,6 @@
   let showDropdown = false;
   let searchQuery = "";
   let searchResults = [];
-  
 
   const handleSearch = debounce(async () => {
     if (!searchQuery.trim()) {
@@ -120,7 +121,6 @@
       url: "/belts",
     },
   ];
- 
 </script>
 
 <div class="shopnow">
@@ -174,9 +174,14 @@
       {#if searchResults.length > 0}
         <div class="search-results">
           {#each searchResults as result}
-            <div class="results" onclick={() => openProductPage(result.product_id)} onkeydown={(e) => (e.key === "Enter" || e.key === "") && openProductPage()}
+            <div
+              class="results"
+              onclick={() => openProductPage(result.product_id)}
+              onkeydown={(e) =>
+                (e.key === "Enter" || e.key === "") && openProductPage()}
               tabindex="0"
-              role="button">
+              role="button"
+            >
               {#if result.imageurl}
                 <div class="resultimg">
                   <img
@@ -187,15 +192,14 @@
                 </div>
               {/if}
 
-              <div class = "resultname">{result.productname}</div>
+              <div class="resultname">{result.productname}</div>
               <div class="pricewars">
                 {#if result.discountprice}
-                <div class = "price">{result.price}</div>  
-                <div class="discountprice">{result.discountprice}</div>
+                  <div class="price">{result.price}</div>
+                  <div class="discountprice">{result.discountprice}</div>
                 {:else}
-                <div class= "finalprice">{result.price}</div>
+                  <div class="finalprice">{result.price}</div>
                 {/if}
-                
               </div>
             </div>
           {/each}
@@ -217,9 +221,9 @@
       </a>
     </div>
     <div class="account">
-      <a href="/account" aria-label="Go to account">
+      <button onclick={navigateToAccount}>
         <Icon icon="bi:person" />
-      </a>
+      </button>
     </div>
   </div>
 </div>
@@ -381,35 +385,22 @@
     flex-direction: row;
     background-color: whitesmoke;
     height: 50px;
-    
-    
-    
-    
-    
   }
-  .resultimg{
+  .resultimg {
     flex: 7%;
     display: flex;
     align-items: center;
-   
-   
-   
-    
   }
 
-    .resultimg img{
-      width: 100%;
-      object-fit: contain;
-      height:90%;
-      margin-top: 5px;
-      margin-bottom: 5px;
-      
-      
-      
+  .resultimg img {
+    width: 100%;
+    object-fit: contain;
+    height: 90%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
 
-    }
-  
-  .resultname{
+  .resultname {
     flex: 80%;
     display: flex;
     align-items: center;
@@ -421,13 +412,13 @@
     flex: 10%;
     align-items: center;
   }
-  .discountprice{
+  .discountprice {
     font-size: 17px;
-    color:rgb(238, 22, 18);
+    color: rgb(238, 22, 18);
     font-weight: 650;
     line-height: 23px;
   }
-  .price{
+  .price {
     text-decoration: line-through;
     color: gray;
     font-size: 15px;
@@ -625,6 +616,5 @@
       margin-top: 15px;
       padding-left: 20px;
     }
-
   }
 </style>

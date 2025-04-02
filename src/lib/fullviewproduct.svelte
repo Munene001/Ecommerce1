@@ -332,20 +332,20 @@
       display: none;
     }
     .thumbnails button {
-      height: 67px;
-      width: 67px;
+      height: 58px;
+      width: 58px;
 
       box-sizing: border-box;
     }
 
     .thumbnails button img {
-      height: 67px;
-      width: 67px;
+      height: 58px;
+      width: 58px;
     }
     .main-image {
       width: 100%;
       height: auto;
-      max-height: 600px;
+      max-height: 500px;
       object-fit: scale-down;
     }
     .main-image img {
@@ -353,6 +353,14 @@
       height: auto;
       max-height: 600px;
       border: 1px solid gray;
+    }
+    .desc-reviewbtn {
+      border: none;
+      background-color: transparent;
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 25px;
+      color: rgb(136, 134, 134);
     }
   }
 </style>

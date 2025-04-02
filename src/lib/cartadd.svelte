@@ -20,10 +20,16 @@
     width: 100%;
     justify-content: center;
   }
+  .mini{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
   .arithmetic {
     display: inline-flex;
     width: fit-content;
-    padding: 10px 10px;
+    height: 40px;
+    width: 30vw;
     gap: 45px;
     align-items: center;
     border: 1px solid black;
@@ -31,7 +37,9 @@
   .incart {
     background-color: black;
     color: white;
-    padding: 10px 49px;
+    height: 42px;
+    width: 60vw;
+    
     font-size: 14px;
   }
   @media (min-width:769px){
