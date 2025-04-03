@@ -1,31 +1,48 @@
-<!-- src/routes/login/+page.svelte -->
 <script>
-    import { auth, initializeCSRF, login } from '$lib/stores/auth';
-    import { onMount } from 'svelte';
-    
-    let email = '';
-    let password = '';
-    let error = '';
-    
-    onMount(async () => {
-        await initializeCSRF(fetch);
-    });
-    
-    async function handleSubmit() {
-        error = '';
-        const success = await login(email, password, fetch);
-        if (!success) {
-            error = 'Login failed. Please check your credentials.';
+    import { goto } from "$app/navigation";
+    import { browser } from "$app/environment"; 
+    import Header from "../../lib/header.svelte";
+  
+    let email = "";
+    let password = "";
+    let errorMessage = "";
+  
+    async function handleLogin() {
+      errorMessage = "";
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({email, password})
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (browser) {
+            localStorage.setItem("authToken", data.token);
+          }
+          goto("/account");
+        } else {
+          const errorData = await response.json();
+          errorMessage = errorData.message || "Login failed";
         }
+      } catch (error) {
+        errorMessage = "An error occurred. Please try again.";
+      }
     }
-</script>
-
-<form on:submit|preventDefault={handleSubmit}>
-    {#if error}
-        <div class="error">{error}</div>
-    {/if}
-    
-    <input type="email" bind:value={email} placeholder="Email">
-    <input type="password" bind:value={password} placeholder="Password">
+  </script>
+  <Header/>
+  
+  <form on:submit|preventDefault={handleLogin}>
+    <input type="email" bind:value={email} required placeholder="Email" />
+    <input type="password" bind:value={password} required placeholder="Password" />
     <button type="submit">Login</button>
-</form>
+  </form>
+  <div>Dont have an account go to<a href="/register" aria-label = "register">Sign Up</a></div>
+  
+  {#if errorMessage}
+    <p style="color: red;">{errorMessage}</p>
+  {/if}
