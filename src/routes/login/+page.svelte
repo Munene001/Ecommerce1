@@ -1,48 +1,191 @@
 <script>
-    import { goto } from "$app/navigation";
-    import { browser } from "$app/environment"; 
-    import Header from "../../lib/header.svelte";
-  
-    let email = "";
-    let password = "";
-    let errorMessage = "";
-  
-    async function handleLogin() {
-      errorMessage = "";
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({email, password})
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (browser) {
-            localStorage.setItem("authToken", data.token);
-          }
-          goto("/account");
-        } else {
-          const errorData = await response.json();
-          errorMessage = errorData.message || "Login failed";
+  import { goto } from "$app/navigation";
+  import { browser } from "$app/environment";
+  import Header from "../../lib/header.svelte";
+  import Footer from "../../lib/footer.svelte";
+  import Prefooter from "../../lib/prefooter.svelte";
+  import Icon from "@iconify/svelte";
+
+  let email = "";
+  let password = "";
+  let errorMessage = "";
+
+  async function handleLogin() {
+    errorMessage = "";
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (browser) {
+          localStorage.setItem("authToken", data.token);
         }
-      } catch (error) {
-        errorMessage = "An error occurred. Please try again.";
+        goto("/account");
+      } else {
+        const errorData = await response.json();
+        errorMessage = errorData.message || "Login failed";
       }
+    } catch (error) {
+      errorMessage = "An error occurred. Please try again.";
     }
-  </script>
-  <Header/>
-  
-  <form on:submit|preventDefault={handleLogin}>
-    <input type="email" bind:value={email} required placeholder="Email" />
-    <input type="password" bind:value={password} required placeholder="Password" />
-    <button type="submit">Login</button>
-  </form>
-  <div>Dont have an account go to<a href="/register" aria-label = "register">Sign Up</a></div>
-  
-  {#if errorMessage}
-    <p style="color: red;">{errorMessage}</p>
-  {/if}
+  }
+</script>
+
+<Header />
+<div class="container">
+  <div class="template">
+    <div class="greener">
+      <div class="green">Login To Account</div>
+      <div class="green2">Gain access to your Account</div>
+    </div>
+
+    <form on:submit|preventDefault={handleLogin}>
+      <input type="email" bind:value={email} required placeholder="Email" />
+      <input
+        type="password"
+        bind:value={password}
+        required
+        placeholder="Password"
+      />
+      <div class="butter">
+        <button type="submit" class="butter1">Login</button>
+        <button class="butter2">Forgot Password?</button>
+      </div>
+      {#if errorMessage}
+        <p style="color: red;" class="error">{errorMessage}</p>
+      {/if}
+      <div class="signup">
+        Dont have an account?<a href="/register" aria-label="register">
+          Sign Up</a
+        >
+      </div>
+    </form>
+    <div class="google">
+      <div class="with">Or login with</div>
+      <div class="icon">
+        <Icon icon="flat-color-icons:google" style="font-size:40px" />Google
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<Prefooter />
+<Footer />
+
+<style>
+  .container {
+    padding: 50px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .template {
+    border: 2px solid black;
+
+    display: flex;
+    flex-direction: column;
+    width: 374px;
+  }
+  .greener {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(26, 72, 69);
+    color: white;
+    height: 100px;
+    justify-content: center;
+  }
+  .green {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 28.8px;
+    color: rgb(255, 255, 255);
+  }
+  .green2 {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 20px;
+    color: rgb(255, 255, 255);
+  }
+  form {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid black;
+  }
+  form input {
+    margin-top: 20px;
+    height: 42px;
+    width: 75%;
+    align-self: center;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  .butter {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    margin-top: 20px;
+    gap: 10px;
+  }
+  .butter1 {
+    padding: 10px 50px;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  .butter2 {
+    border: none;
+    background-color: transparent;
+  }
+  .error{
+    align-self: center;
+  }
+  .signup {
+    align-self: center;
+    margin-top: 10px;
+    margin-bottom: 18px;
+  }
+  .google {
+    background-color: rgb(242, 242, 242);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    justify-items: center;
+    padding: 10px 0px;
+  }
+  .icon {
+    display: flex;
+    flex-direction: row;
+    justify-items: center;
+    font-size: 14px;
+  }
+  .with {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 21px;
+    color: rgb(0, 0, 0);
+  }
+  @media (max-width:768px){
+
+    .container{
+      padding: 30px 0px;
+      box-sizing: border-box;
+    }
+   .template{
+    width: 95%;
+    
+   }
+   .butter{
+    gap: 5px;
+   }
+  }
+</style>
