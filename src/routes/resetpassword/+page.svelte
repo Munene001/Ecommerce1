@@ -1,61 +1,57 @@
 <script>
   import Header from "../../lib/header.svelte";
-  import { goto } from "$app/navigation";
-  import Footer from "../../lib/footer.svelte";
   import Prefooter from "../../lib/prefooter.svelte";
+  import Footer from "../../lib/footer.svelte";
+  import Navigationbar from "../../lib/navigationbar.svelte";
+  import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
 
-  let username = "";
-  let email = "";
-  let password = "";
-  let passwordConfirmation = ""; // Add this line
-  let errorMessage = "";
+  let newPassword = "";
+  let confirmPassword = "";
+  let message = "";
   let isLoading = false;
-  let showPassword = false;
+  let showNewPassword = false;
   let showConfirmPassword = false;
 
   function toggleNewPassword() {
-    showPassword = !showPassword;
+    showNewPassword = !showNewPassword;
   }
 
   function toggleConfirmPassword() {
     showConfirmPassword = !showConfirmPassword;
   }
 
-  async function registerAccount() {
-    if (password !== passwordConfirmation) {
-      // Client-side validation
-      errorMessage = "Passwords don't match";
+  const token = $page.url.searchParams.get("token");
+  const email = $page.url.searchParams.get("email");
+
+  async function handleReset() {
+    if (newPassword !== confirmPassword) {
+      message = "Passwords do not match";
       return;
     }
-
     isLoading = true;
-    errorMessage = "";
-
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/register", {
+      const response = await fetch("http://127.0.0.1:8000/api/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify({
-          username,
           email,
-          password,
-          password_confirmation: passwordConfirmation, // Match Laravel's expected field name
+          password: newPassword,
+          password_confirmation: confirmPassword,
+          token,
         }),
       });
-
+      const data = await response.json();
       if (response.ok) {
-        goto("/login");
+        message = "Password reset successfully";
+        setTimeout(() => (window.location.href = "/login"), 1000);
       } else {
-        const errorData = await response.json();
-        errorMessage = errorData.message || "Registration failed";
+        message = data.message || "Error resetting password";
       }
     } catch (error) {
-      errorMessage = "An error occurred. Please try again";
-      console.error("Registration error:", error);
+      message = "Network error occurred";
     } finally {
       isLoading = false;
     }
@@ -63,44 +59,43 @@
 </script>
 
 <Header />
+
 <div class="container">
+  <!--{#if !token || !email}
+  <p>Invalid reset link. Please request a new password reset.</p>
+{:else}-->
   <div class="template">
     <div class="greener">
-      <div class="green">Register Account</div>
-      <div class="green2">Make an Account with us</div>
+      <div class="green">Reset Account Password</div>
+      <div class="green2">Change the password to one you can remember</div>
     </div>
+    <form on:submit|preventDefault={handleReset}>
+      <input type="hidden" name="email" value={email} />
+      <input type="hidden" name="token" value={token} />
 
-    <form on:submit|preventDefault={registerAccount}>
-      <input
-        type="text"
-        bind:value={username}
-        required
-        placeholder="Username"
-      /><br />
-      <input type="email" bind:value={email} required placeholder="Email" /><br
-      />
       <div class="password-container">
         <input
-          type={showPassword ? "text" : "password"}
+          type={showNewPassword ? "text" : "password"}
           id="newPassword"
-          bind:value={password}
+          bind:value={newPassword}
           required
-          placeholder="Password"
+          placeholder="New Password"
           class="password-input"
         />
         <span class="toggle-icon" on:click={toggleNewPassword}>
-          {#if showPassword}
+          {#if showNewPassword}
             <Icon icon="akar-icons:eye-open" />
           {:else}
             <Icon icon="formkit:eyeclosed" />
           {/if}
         </span>
       </div>
+
       <div class="password-container">
         <input
           type={showConfirmPassword ? "text" : "password"}
           id="confirmPassword"
-          bind:value={passwordConfirmation}
+          bind:value={confirmPassword}
           required
           placeholder="Confirm Password"
           class="password-input"
@@ -113,30 +108,21 @@
           {/if}
         </span>
       </div>
-      
-      <div class="butter">
-      <button type="submit" disabled={isLoading}  class = "butter1">
-        {isLoading ? "Registering..." : "Sign Up"}
+
+      <button class="butter1" type="submit" disabled={isLoading}>
+        {isLoading ? "Resetting..." : "Reset Password"}
       </button>
-      <button class="butter2">Login</button>
-      </div>
 
-      <p style="color: red;" class="error">{errorMessage}</p>
+      {#if message}
+        <p class:error={!message.includes("successfully")}>{message}</p>
+      {/if}
     </form>
-    <div class="google">
-      <div class="with">Or Signup with</div>
-      <div class="icon">
-        <Icon icon="flat-color-icons:google" style="font-size:40px" />Google
-      </div>
-    </div>
   </div>
+  <!--{/if}-->
 </div>
-
-{#if errorMessage}
-  <p style="color: red;">{errorMessage}</p>
-{/if}
 <Prefooter />
 <Footer />
+<Navigationbar />
 
 <style>
   .container {
@@ -192,61 +178,27 @@
     cursor: pointer;
     color: #666;
   }
-  .password-container input{
-    width: 100%;
-   margin-top: 10px;
-   align-self: center;
-   
-  }
+  
   form input {
-    margin-top: 10px;
+    margin-top: 20px;
     height: 42px;
-    width: 75%;
+    width: 100%;
     align-self: center;
     border-radius: 6px;
     font-size: 16px;
-  }
-  .butter {
-    display: flex;
-    flex-direction: row;
-    align-self: center;
-    margin-top: 20px;
-    gap: 10px;
   }
   .butter1 {
     padding: 10px 50px;
     border-radius: 6px;
     font-size: 16px;
-  }
-  .butter2 {
-    border: none;
-    background-color: transparent;
-  }
-
-  
-  .google {
-    background-color: rgb(242, 242, 242);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    justify-items: center;
-    padding: 10px 0px;
-  }
-  .icon {
-    display: flex;
-    flex-direction: row;
-    justify-items: center;
-    font-size: 14px;
-  }
-  .with {
-    font-size: 14px;
-    font-weight: 300;
-    line-height: 21px;
-    color: rgb(0, 0, 0);
-  }
-  .error {
+    width: 60%;
     align-self: center;
+    margin-top: 14px;
+    margin-bottom: 20px;
+  }
+  p {
+    align-self: center;
+    color: red;
   }
   @media (max-width: 768px) {
     .container {

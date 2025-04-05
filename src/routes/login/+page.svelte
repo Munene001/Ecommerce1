@@ -9,6 +9,17 @@
   let email = "";
   let password = "";
   let errorMessage = "";
+  let showPassword = false;
+
+
+  function togglePassword() {
+    showPassword = !showPassword;
+  }
+
+  function fpage(){
+    goto("/forgotpassword");
+  }
+
 
   async function handleLogin() {
     errorMessage = "";
@@ -48,15 +59,27 @@
 
     <form on:submit|preventDefault={handleLogin}>
       <input type="email" bind:value={email} required placeholder="Email" />
-      <input
-        type="password"
-        bind:value={password}
-        required
-        placeholder="Password"
-      />
+      <div class="password-container">
+        <input
+          type={showPassword ? "text" : "password"}
+          id="password"
+          bind:value={password}
+          required
+          placeholder=" Password"
+          class="password-input"
+        />
+        <span class="toggle-icon" on:click={togglePassword}>
+          {#if showPassword}
+            <Icon icon="akar-icons:eye-open" />
+          {:else}
+            <Icon icon="formkit:eyeclosed" />
+          {/if}
+        </span>
+      </div>
+     
       <div class="butter">
         <button type="submit" class="butter1">Login</button>
-        <button class="butter2">Forgot Password?</button>
+        <button class="butter2" on:click={fpage}>Forgot Password?</button>
       </div>
       {#if errorMessage}
         <p style="color: red;" class="error">{errorMessage}</p>
@@ -128,6 +151,23 @@
     align-self: center;
     border-radius: 6px;
     font-size: 16px;
+  }
+  .password-container{
+    align-self: center;
+    width: 75%;
+    position: relative;
+  }
+  .password-container input {
+    width: 100%;
+    align-self: center;
+  }
+  .toggle-icon {
+    position: absolute;
+    top: 59%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
   }
   .butter {
     display: flex;
