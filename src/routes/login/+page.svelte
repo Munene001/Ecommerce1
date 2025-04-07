@@ -68,7 +68,7 @@
           placeholder=" Password"
           class="password-input"
         />
-        <span class="toggle-icon" on:click={togglePassword}>
+        <span class="toggle-icon" on:click={togglePassword} tabindex="0" role="button"  on:keydown={e => e.key === 'Enter' || e.key === ' ' ? toggleNewPassword() : null}>
           {#if showPassword}
             <Icon icon="akar-icons:eye-open" />
           {:else}

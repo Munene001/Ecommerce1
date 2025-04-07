@@ -9,6 +9,9 @@
   import "nouislider/dist/nouislider.css";
   import Icon from "@iconify/svelte";
 
+  let showShoes = false;
+  let showKidsShoes = false;
+
   const dispatch = createEventDispatcher();
 
   export let visible = false;
@@ -18,7 +21,34 @@
   }
 
   export let categories = [];
-  export let sizes = ["S", "M", "L", "XL", "XXL"];
+  export let sizes = [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "Eu27",
+    "Eu28",
+    "Eu29",
+    "Eu30",
+    "Eu31",
+    "Eu32",
+    "Eu33",
+    "Eu34",
+    "Eu35",
+    "Eu36",
+    "Eu37",
+    "Eu38",
+    "Eu39",
+    "Eu40",
+    "Eu41",
+    "Eu42",
+    "Eu43",
+    "Eu44",
+    "Eu45",
+    "Eu46",
+    "Eu47",
+    "Eu48",
+  ];
   export let colors = [
     "White",
     "Red",
@@ -156,14 +186,6 @@
       </label>
     {/each}
   </div>
-  <div class="filtergroup">
-    <h3>Price</h3>
-    <div class="pricer">
-      <p>price: {minPrice} Ksh - {maxPrice} Ksh</p>
-      <button class="bt" onclick={applyPriceFilters}>Filter Price</button>
-    </div>
-    <div id="desktop-price-slider" class="range-slider"></div>
-  </div>
   <div class="filtergroup" id="color">
     <h3>Colors</h3>
     {#each colors as color}
@@ -192,17 +214,60 @@
   </div>
   <div class="filtergroup">
     <h3>Sizes</h3>
-    {#each sizes as size}
-      <label class="color-checkbox">
-        <input
-          type="checkbox"
-          value={size}
-          bind:group={selectedSizes}
-          onchange={applyFilters}
-        />
-        {size}
-      </label>
-    {/each}
+    <h4 class="size-subtitle">Body Wear</h4>
+    <div>
+      {#each ["S", "M", "L", "XL"] as size}
+        <label>
+          <input
+            type="checkbox"
+            value={size}
+            bind:group={selectedSizes}
+            onchange={applyFilters}
+          />
+          {size}
+        </label>
+      {/each}
+    </div>
+    
+    <div class="shoe-section-header" onclick={() => showShoes = !showShoes} role>
+      <h4 class="size-subtitle">Shoes</h4>
+      <Icon icon={showShoes ? "material-symbols:keyboard-arrow-up" : "material-symbols:keyboard-arrow-down"} />
+    </div>
+    {#if showShoes}
+      <div class="size-group">
+        {#each ["Eu35", "Eu36", "Eu37", "Eu38", "Eu39", "Eu40", "Eu41", "Eu42", "Eu43", "Eu44", "Eu45", "Eu46", "Eu47", "Eu48"] as size}
+          <label class="size-checkbox">
+            <input
+              type="checkbox"
+              value={size}
+              bind:group={selectedSizes}
+              onchange={applyFilters}
+            />
+            {size}
+          </label>
+        {/each}
+      </div>
+    {/if}
+    
+    <div class="shoe-section-header" onclick={() => showKidsShoes = !showKidsShoes} role>
+      <h4 class="size-subtitle">Kids Shoes</h4>
+      <Icon icon={showKidsShoes ? "material-symbols:keyboard-arrow-up" : "material-symbols:keyboard-arrow-down"} />
+    </div>
+    {#if showKidsShoes}
+      <div class="size-group">
+        {#each ["Eu27", "Eu28", "Eu29", "Eu30", "Eu31", "Eu32", "Eu33", "Eu34"] as size}
+          <label class="size-checkbox">
+            <input
+              type="checkbox"
+              value={size}
+              bind:group={selectedSizes}
+              onchange={applyFilters}
+            />
+            {size}
+          </label>
+        {/each}
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -211,12 +276,15 @@
     <div class="toper">
       <h3>Filter Products</h3>
       <button class="close" onclick={closeFilter} aria-label="close"
-        ><Icon icon="material-symbols:close-rounded" style = "font-size:21px;"/></button
+        ><Icon
+          icon="material-symbols:close-rounded"
+          style="font-size:21px;"
+        /></button
       >
     </div>
     <div class="filtergroup">
       <h3>Categories</h3>
-      
+
       {#each categories as category}
         <label>
           <input
@@ -268,17 +336,60 @@
     </div>
     <div class="filtergroup">
       <h3>Sizes</h3>
-      {#each sizes as size}
-        <label class="color-checkbox">
-          <input
-            type="checkbox"
-            value={size}
-            bind:group={selectedSizes}
-            onchange={applyFilters}
-          />
-          {size}
-        </label>
-      {/each}
+      <h4 class="size-subtitle">Body Wear</h4>
+      <div>
+        {#each ["S", "M", "L", "XL"] as size}
+          <label>
+            <input
+              type="checkbox"
+              value={size}
+              bind:group={selectedSizes}
+              onchange={applyFilters}
+            />
+            {size}
+          </label>
+        {/each}
+      </div>
+      
+      <div class="shoe-section-header" onclick={() => showShoes = !showShoes} role>
+        <h4 class="size-subtitle">Shoes</h4>
+        <Icon icon={showShoes ? "material-symbols:keyboard-arrow-up" : "material-symbols:keyboard-arrow-down"} />
+      </div>
+      {#if showShoes}
+        <div class="size-group">
+          {#each ["Eu35", "Eu36", "Eu37", "Eu38", "Eu39", "Eu40", "Eu41", "Eu42", "Eu43", "Eu44", "Eu45", "Eu46", "Eu47", "Eu48"] as size}
+            <label class="size-checkbox">
+              <input
+                type="checkbox"
+                value={size}
+                bind:group={selectedSizes}
+                onchange={applyFilters}
+              />
+              {size}
+            </label>
+          {/each}
+        </div>
+      {/if}
+      
+      <div class="shoe-section-header" onclick={() => showKidsShoes = !showKidsShoes} role>
+        <h4 class="size-subtitle">Kids Shoes</h4>
+        <Icon icon={showKidsShoes ? "material-symbols:keyboard-arrow-up" : "material-symbols:keyboard-arrow-down"} />
+      </div>
+      {#if showKidsShoes}
+        <div class="size-group">
+          {#each ["Eu27", "Eu28", "Eu29", "Eu30", "Eu31", "Eu32", "Eu33", "Eu34"] as size}
+            <label class="size-checkbox">
+              <input
+                type="checkbox"
+                value={size}
+                bind:group={selectedSizes}
+                onchange={applyFilters}
+              />
+              {size}
+            </label>
+          {/each}
+        </div>
+      {/if}
     </div>
   </div>
 {/if}
@@ -401,8 +512,8 @@
     position: fixed;
     top: 0%;
     left: 0%;
-    bottom: 0%;
-    padding:0px 15px;
+    bottom: 9vh;
+    padding: 0px 15px;
     box-sizing: border-box;
     z-index: 100;
     background-color: white;
@@ -412,22 +523,72 @@
   .toper {
     display: flex;
     flex-direction: row;
-    
-    
-    
+
     justify-content: space-between;
     padding-bottom: 10px;
     border-bottom: 1px solid black;
-
   }
   .close {
     box-sizing: border-box;
     border: none;
     background-color: transparent;
   }
+  .size-subtitle {
+    margin: 10px 0 5px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+  }
+
+  .size-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .size-checkbox {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  
+
+  .size-checkbox input[type="checkbox"] {
+    margin-right: 8px;
+  }
   @media (max-width: 768px) {
     .desktop-filter {
       display: none;
+    }
+    .size-subtitle {
+      margin: 10px 0 5px 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .size-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .size-checkbox {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+
+    .size-checkbox input[type="checkbox"] {
+      margin-right: 8px;
     }
   }
   @media (min-width: 769px) {

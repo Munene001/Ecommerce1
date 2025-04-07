@@ -12,6 +12,7 @@
     discountprice: 0,
     images: [],
     productdescriptions: [],
+    productsizes:[],
   };
   let {
     images = [],
@@ -21,6 +22,7 @@
     discountprice,
     status,
     productdescriptions,
+    productsizes
   } = product;
   let currentIndex = 0;
   let touchStartx = 0;
@@ -96,6 +98,11 @@
 
       <div class="description">{description}</div>
       <div class="status">{status}</div>
+      <div class="sizer">
+        {#each productsizes as size}
+        <div class="size">{size.size}</div>
+        {/each}
+      </div>
       <div class="check">
         <div class="arithmetic"><span>-</span><span>1</span><span>+</span></div>
         <button class="incart">Add to Cart</button>
@@ -309,6 +316,15 @@
   }
   .farleft {
     flex: 0 0 15%;
+  }
+  .sizer{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+  }
+  .size{
+    border: 1px solid black;
+    padding: 10px;
   }
   @media (max-width: 768px) {
     .product-container {

@@ -88,7 +88,7 @@
           placeholder="Password"
           class="password-input"
         />
-        <span class="toggle-icon" on:click={toggleNewPassword}>
+        <span class="toggle-icon" on:click={toggleNewPassword} role="button" tabindex="0"  on:keydown={e => e.key === 'Enter' || e.key === ' ' ? toggleNewPassword() : null}>
           {#if showPassword}
             <Icon icon="akar-icons:eye-open" />
           {:else}
@@ -105,7 +105,7 @@
           placeholder="Confirm Password"
           class="password-input"
         />
-        <span class="toggle-icon" on:click={toggleConfirmPassword}>
+        <span class="toggle-icon" on:click={toggleConfirmPassword} role="button" tabindex="0"  on:keydown={e => e.key === 'Enter' || e.key === ' ' ? toggleNewPassword() : null}>
           {#if showConfirmPassword}
             <Icon icon="akar-icons:eye-open" />
           {:else}
