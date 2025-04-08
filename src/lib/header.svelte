@@ -3,6 +3,9 @@
   import Icon from "@iconify/svelte";
   import { debounce, result, value } from "lodash-es";
   import { openProductPage } from "./productutil";
+  import CartHeader from "./cartHeader.svelte";
+  import Accountmodal from "./accountmodal.svelte";
+ 
 
   function navigateToAccount(){
     goto("/account");
@@ -210,21 +213,14 @@
     </div>
   </div>
   <div class="right">
-    <div class="cart">
-      <a href="/checkout" aria-label="Go to checkout">
-        <Icon icon="raphael:cart" />
-      </a>
-    </div>
+    <CartHeader/>
     <div class="wishlist">
       <a href="/wishlist" aria-label="Go to wishlist">
         <Icon icon="tabler:heart" />
       </a>
     </div>
-    <div class="account">
-      <button onclick={navigateToAccount}>
-        <Icon icon="bi:person" />
-      </button>
-    </div>
+    <Accountmodal/>
+  
   </div>
 </div>
 <div class="route">
@@ -257,11 +253,7 @@
     <Icon icon="mdi-light:menu" />
   </button>
   <div class="head"><h1>Cloyta</h1></div>
-  <div class="cartmobile">
-    <a href="/checkout" aria-label="Go to checkout">
-      <Icon icon="raphael:cart" />
-    </a>
-  </div>
+ <CartHeader/>
 </div>
 {#if showModal}
   <div class="pops">
@@ -472,24 +464,14 @@
     font-size: 20px;
     margin-left: 5px;
   }
-  .cart {
-    font-size: 25px;
-    margin-left: 90px;
-    line-height: 32px;
-    cursor: pointer;
-  }
+ 
   .wishlist {
     font-size: 27px;
     margin-left: 30px;
     line-height: 32px;
     cursor: pointer;
   }
-  .account {
-    font-size: 27px;
-    margin-left: 30px;
-    line-height: 32px;
-    cursor: pointer;
-  }
+
   .route {
     height: 56px;
     border-bottom: 1px solid grey;
@@ -551,13 +533,7 @@
       outline: none;
       cursor: pointer;
     }
-    .cartmobile {
-      font-size: 31px;
-    }
-    .cartmobile a {
-      text-decoration: none;
-      color: #000000;
-    }
+   
     .head {
       font-size: 16px;
       line-height: 24px;
