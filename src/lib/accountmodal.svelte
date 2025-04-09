@@ -29,6 +29,7 @@
 <div
 	on:click={openModal}
 	on:mouseover={openModal}
+	on:focus={openModal}
 	style="cursor: pointer; display: inline-block;"
     role
 >
@@ -43,6 +44,7 @@
 	on:click={(e) => {
 		if (e.target === dialog) closeModal();
 	}}
+	role
 >
 	<div class="modal-content">
 		<h2>My Account</h2>
@@ -59,7 +61,7 @@
 		</div>
 		<hr />
 		<!-- Close Button -->
-		<button autofocus on:click={closeModal}>Close</button>
+		<button on:focus on:click={closeModal}>Close</button>
 	</div>
 </dialog>
 

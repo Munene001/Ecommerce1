@@ -27,15 +27,15 @@
     status,
     productdescriptions,
     productsizes,
-    product_id
+    product_id,
   } = product;
 
   let currentIndex = 0;
   let activeTab = "desc";
-  let selectedSizeId = null;
-  let cartQuantity = 0;
-  let showPopup = false;
+  let cartQuantity = 0; // For single-size UI
   let cart = [];
+  let showModal = false;
+  let dialog;
 
   // Safe cart access
   function getCart() {
@@ -47,16 +47,15 @@
     }
   }
 
-  // Sync cart state for current product
+  // Sync cart state and update cartQuantity for single-size
   function syncCartState() {
     cart = getCart();
-    if (productsizes.length === 1 && !selectedSizeId) {
-      selectSize(productsizes[0].size_id);
-    } else if (selectedSizeId) {
-      const item = cart.find((i) => i.product_id === product_id && i.size_id === selectedSizeId);
+    if (productsizes.length === 1) {
+      const item = cart.find(
+        (i) =>
+          i.product_id === product_id && i.size_id === productsizes[0].size_id
+      );
       cartQuantity = item ? item.quantity : 0;
-    } else {
-      cartQuantity = 0;
     }
   }
 
@@ -96,84 +95,127 @@
     );
   }
 
-  function selectSize(sizeId) {
-    if (!product_id) return;
-    selectedSizeId = sizeId;
-    const item = cart.find((i) => i.product_id === product_id && i.size_id === sizeId);
-    cartQuantity = item ? item.quantity : 0;
-  }
-
-  function addToCart() {
-    if (!browser) return; // Only run on client
-    try {
-      if (!product_id) {
-        console.error("No product ID available");
-        return;
-      }
-      if (productsizes.length > 1 && !selectedSizeId) {
-        alert("Please select a size");
-        return;
-      }
-      const sizeIdToAdd = productsizes.length === 1 ? productsizes[0].size_id : selectedSizeId;
-      if (!sizeIdToAdd) return;
-
-      const sizeObj = productsizes.find((s) => s.size_id === sizeIdToAdd);
-      const existingItemIndex = cart.findIndex(
-        (item) => item.product_id === product_id && item.size_id === sizeIdToAdd
-      );
-      const currentQty = existingItemIndex === -1 ? 0 : cart[existingItemIndex].quantity;
-
-      if (currentQty >= sizeObj.stock_quantity) {
-        alert(`Only ${sizeObj.stock_quantity} ${sizeObj.size} available`);
-        return;
-      }
-
-      if (existingItemIndex === -1) {
-        cart.push({ product_id, size_id: sizeIdToAdd, quantity: 1 });
-        cartQuantity = 1;
-      } else {
-        cart[existingItemIndex].quantity++;
-        cartQuantity++;
-      }
-
-      localStorage.setItem("cart", JSON.stringify(cart));
-      showPopup = true;
-      window.dispatchEvent(new Event("cartUpdated"));
-    } catch (error) {
-      console.error("Error in addToCart:", error);
+  // Modal controls
+  function openModal() {
+    if (!showModal && productsizes.length > 1 && dialog) {
+      showModal = true;
+      dialog.showModal();
     }
   }
 
-  function incrementQuantity() {
-    addToCart(); // Reuse addToCart logic
+  function closeModal() {
+    if (dialog) {
+      showModal = false;
+      dialog.close();
+    }
   }
 
-  function decrementQuantity() {
-    if (!browser) return; // Only run on client
-    try {
-      if (!product_id) return;
-      if (productsizes.length > 1 && !selectedSizeId) {
-        alert("Please select a size");
-        return;
-      }
-      const sizeIdToAdd = productsizes.length === 1 ? productsizes[0].size_id : selectedSizeId;
-      if (!sizeIdToAdd || cartQuantity <= 0) return;
+  // Multi-size cart functions
+  function incrementQuantity(sizeId) {
+    if (!browser) return;
+    const sizeObj = productsizes.find((s) => s.size_id === sizeId);
+    const existingItemIndex = cart.findIndex(
+      (item) => item.product_id === product_id && item.size_id === sizeId
+    );
+    const currentQty =
+      existingItemIndex === -1 ? 0 : cart[existingItemIndex].quantity;
 
-      const existingItemIndex = cart.findIndex(
-        (item) => item.product_id === product_id && item.size_id === sizeIdToAdd
-      );
+    if (currentQty >= sizeObj.stock_quantity) {
+      alert(`Only ${sizeObj.stock_quantity} ${sizeObj.size} available`);
+      return;
+    }
 
-      if (existingItemIndex !== -1 && cart[existingItemIndex].quantity > 0) {
-        cart[existingItemIndex].quantity--;
-        cartQuantity--;
-        if (cart[existingItemIndex].quantity === 0) {
-          cart.splice(existingItemIndex, 1);
-        }
-        localStorage.setItem("cart", JSON.stringify(cart));
-        window.dispatchEvent(new Event("cartUpdated"));
+    if (existingItemIndex === -1) {
+      cart.push({ product_id, size_id: sizeId, quantity: 1 });
+    } else {
+      cart[existingItemIndex].quantity++;
+    }
+
+    cart = [...cart]; // Trigger reactivity
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
+  }
+
+  function decrementQuantity(sizeId) {
+    if (!browser) return;
+    const existingItemIndex = cart.findIndex(
+      (item) => item.product_id === product_id && item.size_id === sizeId
+    );
+
+    if (existingItemIndex !== -1 && cart[existingItemIndex].quantity > 0) {
+      cart[existingItemIndex].quantity--;
+      if (cart[existingItemIndex].quantity === 0) {
+        cart.splice(existingItemIndex, 1);
       }
-    } catch (error) {
-      console.error("Error in decrementQuantity:", error);
+
+      cart = [...cart]; // Trigger reactivity
+      localStorage.setItem("cart", JSON.stringify(cart));
+      window.dispatchEvent(new Event("cartUpdated"));
+    }
+  }
+
+  function getQuantityForSize(sizeId) {
+    const item = cart.find(
+      (i) => i.product_id === product_id && i.size_id === sizeId
+    );
+    return item ? item.quantity : 0;
+  }
+
+  // Single-size legacy cart functions
+  function addToCartLegacy() {
+    if (!browser || productsizes.length !== 1) return;
+    const sizeObj = productsizes[0];
+    const existingItemIndex = cart.findIndex(
+      (item) =>
+        item.product_id === product_id && item.size_id === sizeObj.size_id
+    );
+    const currentQty =
+      existingItemIndex === -1 ? 0 : cart[existingItemIndex].quantity;
+
+    if (currentQty >= sizeObj.stock_quantity) {
+      alert(`Only ${sizeObj.stock_quantity} ${sizeObj.size} available`);
+      return;
+    }
+
+    if (existingItemIndex === -1) {
+      cart.push({ product_id, size_id: sizeObj.size_id, quantity: 1 });
+    } else {
+      cart[existingItemIndex].quantity++;
+    }
+
+    cart = [...cart]; // Trigger reactivity
+    cartQuantity = getQuantityForSize(sizeObj.size_id); // Sync UI
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
+  }
+
+  function incrementQuantityLegacy() {
+    addToCartLegacy();
+  }
+
+  function decrementQuantityLegacy() {
+    if (!browser || productsizes.length !== 1) return;
+    const sizeId = productsizes[0].size_id;
+    const existingItemIndex = cart.findIndex(
+      (item) => item.product_id === product_id && item.size_id === sizeId
+    );
+
+    if (existingItemIndex !== -1 && cart[existingItemIndex].quantity > 0) {
+      cart[existingItemIndex].quantity--;
+      if (cart[existingItemIndex].quantity === 0) {
+        cart.splice(existingItemIndex, 1);
+      }
+
+      cart = [...cart]; // Trigger reactivity
+      cartQuantity = getQuantityForSize(sizeId); // Sync UI
+      localStorage.setItem("cart", JSON.stringify(cart));
+      window.dispatchEvent(new Event("cartUpdated"));
+    }
+  }
+  $: quantitiesBySize = {};
+  $: {
+    for (const size of productsizes) {
+      quantitiesBySize[size.size_id] = getQuantityForSize(size.size_id);
     }
   }
 </script>
@@ -228,33 +270,33 @@
           {#each productsizes as size}
             <button
               class="size"
-              class:active={selectedSizeId === size.size_id}
-              on:click={() => selectSize(size.size_id)}
+              on:click={productsizes.length > 1 ? openModal : null}
             >
               {size.size} ({size.stock_quantity} left)
             </button>
           {/each}
         </div>
       </div>
-      <div class="check">
-        <div class="arithmetic">
-          <span on:click={decrementQuantity} role>-</span>
-          <span>{cartQuantity}</span>
-          <span on:click={incrementQuantity} role>+</span>
+      {#if productsizes.length === 1}
+        <div class="check">
+          <div class="arithmetic">
+            <button on:click={decrementQuantityLegacy} role>-</button>
+            <span>{cartQuantity}</span>
+            <button on:click={incrementQuantityLegacy} role>+</button>
+          </div>
+          <button class="incart" on:click={addToCartLegacy}>Add to Cart</button>
         </div>
-        <button class="incart" on:click={addToCart}>Add to Cart</button>
-      </div>
-      {#if showPopup}
-        <div class="cart-popup">
-          Item added to cart! ({cart.reduce((sum, item) => sum + item.quantity, 0)} items)
-        </div>
+      {:else}
+        <button class="incart" on:click={openModal}>Add to Cart</button>
       {/if}
+
       <div class="xtra">
         <button class="extra">
           <span><Icon icon="ph:heart-thin" /></span>Add to wishlist
         </button>
         <button class="extra">
-          <span><Icon icon="material-symbols-light:share-outline" /></span>Share Product
+          <span><Icon icon="material-symbols-light:share-outline" /></span>Share
+          Product
         </button>
       </div>
     </div>
@@ -263,24 +305,70 @@
 {:else}
   <p>No product available</p>
 {/if}
+{#if productsizes.length > 1}
+  <dialog
+    bind:this={dialog}
+    on:close={closeModal}
+    on:click={(e) => {
+      if (e.target === dialog) closeModal();
+    }}
+    role
+  >
+    <div class="modal-content">
+      <h2>Select Size</h2>
+      <div class="size-options">
+        {#each productsizes as size}
+          <div class="size-row">
+            <span>{size.size} ({size.stock_quantity} left)</span>
+            <div class="arithmetic">
+              <button on:click={() => decrementQuantity(size.size_id)}>-</button
+              >
+              <span>{quantitiesBySize[size.size_id]}</span>
+              <button on:click={() => incrementQuantity(size.size_id)}>+</button
+              >
+            </div>
+          </div>
+        {/each}
+      </div>
+      <button on:click={closeModal}>Done</button>
+    </div>
+  </dialog>
+{/if}
 
 <div class="desc-review">
   <div class="btn-section">
-    <button class="desc-reviewbtn" class:active={activeTab === "desc"} on:click={() => (activeTab = "desc")}>
+    <button
+      class="desc-reviewbtn"
+      class:active={activeTab === "desc"}
+      on:click={() => (activeTab = "desc")}
+    >
       Full Description
     </button>
-    <button class="desc-reviewbtn" class:active={activeTab === "additional_information"} on:click={() => (activeTab = "additional_information")}>
+    <button
+      class="desc-reviewbtn"
+      class:active={activeTab === "additional_information"}
+      on:click={() => (activeTab = "additional_information")}
+    >
       Additional Information
     </button>
-    <button class="desc-reviewbtn" class:active={activeTab === "reviews"} on:click={() => (activeTab = "reviews")}>
+    <button
+      class="desc-reviewbtn"
+      class:active={activeTab === "reviews"}
+      on:click={() => (activeTab = "reviews")}
+    >
       Reviews
     </button>
   </div>
   <div class="desc-reviewctn">
     {#if activeTab === "desc"}
-      <div>{productdescriptions[0]?.short_description || "No description available"}</div>
+      <div>
+        {productdescriptions[0]?.short_description ||
+          "No description available"}
+      </div>
     {:else if activeTab === "additional_information"}
-      <div>{productdescriptions[0]?.additional_information || "No additional info"}</div>
+      <div>
+        {productdescriptions[0]?.additional_information || "No additional info"}
+      </div>
     {:else}
       <div>Product review</div>
     {/if}
@@ -466,6 +554,76 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
+  }
+  dialog {
+    max-width: 32em;
+    border-radius: 0.4em;
+    border: none;
+    padding: 0;
+    position: absolute;
+  }
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  .modal-content {
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75em;
+  }
+  .size-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+  }
+  .size-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .arithmetic {
+    display: inline-flex;
+    width: fit-content;
+    padding: 5px 10px;
+    gap: 20px;
+    align-items: center;
+    border: 1px solid black;
+  }
+  .check .arithmetic {
+    padding: 15px 15px;
+    gap: 45px;
+  }
+  button {
+    background: #eee;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #ddd;
+  }
+  dialog[open] {
+    animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes zoom {
+    from {
+      transform: scale(0.95);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  dialog[open]::backdrop {
+    animation: fade 0.2s ease-out;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
   @media (max-width: 768px) {
     .product-container {
