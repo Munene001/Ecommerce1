@@ -1,11 +1,17 @@
-<script></script>
+<script>
+  
+</script>
+
 <div class="check">
-<div class="mini">
-    <div class="arithmetic"><span>-</span><span>1</span><span>+</span></div>
+  <div class="mini">
+    <div class="arithmetic">
+      <button>-</button><span>1</span><button>+</button>
+    </div>
     <button class="incart">Add to Cart</button>
   </div>
-  </div>
-  <style>
+</div>
+
+<style>
   .check {
     display: flex;
     flex-direction: row;
@@ -20,7 +26,7 @@
     width: 100%;
     justify-content: center;
   }
-  .mini{
+  .mini {
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -39,12 +45,12 @@
     color: white;
     height: 42px;
     width: 60vw;
-    
+
     font-size: 14px;
   }
-  @media (min-width:769px){
-    .check{
-    display: none;
+  @media (min-width: 769px) {
+    .check {
+      display: none;
+    }
   }
-}
-  </style>
+</style>

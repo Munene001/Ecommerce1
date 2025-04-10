@@ -12,7 +12,7 @@
       console.log("Product received:", product);
     }
 </script>
-<Header/>
+<Header key={product?.id}/>
     
   
   {#if product}

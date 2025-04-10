@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { browser } from "$app/environment"; 
+  
 
   let token = browser ? localStorage.getItem("authToken") || "" : "";
   let isAuthenticated = false;

@@ -5,6 +5,7 @@
   import Cartadd from "./cartadd.svelte";
   import { onMount, beforeUpdate } from "svelte";
   import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
 
   export let product = {
     productname: "",
@@ -36,6 +37,7 @@
   let cart = [];
   let showModal = false;
   let dialog;
+  let message;
 
   // Safe cart access
   function getCart() {
@@ -94,7 +96,9 @@
       { once: true }
     );
   }
-
+  function toCart() {
+    goto("/checkout");
+  }
   // Modal controls
   function openModal() {
     if (!showModal && productsizes.length > 1 && dialog) {
@@ -121,7 +125,8 @@
       existingItemIndex === -1 ? 0 : cart[existingItemIndex].quantity;
 
     if (currentQty >= sizeObj.stock_quantity) {
-      alert(`Only ${sizeObj.stock_quantity} ${sizeObj.size} available`);
+      message = `Only ${sizeObj.stock_quantity} ${sizeObj.size} available in stock`;
+      setTimeout(() => (message = ""), 3000);
       return;
     }
 
@@ -134,6 +139,7 @@
     cart = [...cart]; // Trigger reactivity
     localStorage.setItem("cart", JSON.stringify(cart));
     window.dispatchEvent(new Event("cartUpdated"));
+    console.log("After increment, cart:", cart);
   }
 
   function decrementQuantity(sizeId) {
@@ -151,6 +157,7 @@
       cart = [...cart]; // Trigger reactivity
       localStorage.setItem("cart", JSON.stringify(cart));
       window.dispatchEvent(new Event("cartUpdated"));
+      console.log("After decrement, cart:", cart);
     }
   }
 
@@ -158,8 +165,10 @@
     const item = cart.find(
       (i) => i.product_id === product_id && i.size_id === sizeId
     );
+
     return item ? item.quantity : 0;
   }
+  $: console.log("Reactive cart change:", cart);
 
   // Single-size legacy cart functions
   function addToCartLegacy() {
@@ -173,7 +182,9 @@
       existingItemIndex === -1 ? 0 : cart[existingItemIndex].quantity;
 
     if (currentQty >= sizeObj.stock_quantity) {
-      alert(`Only ${sizeObj.stock_quantity} ${sizeObj.size} available`);
+      message = `Only ${sizeObj.stock_quantity} ${sizeObj.size} available in stock`;
+      setTimeout(() => (message = ""), 3000);
+
       return;
     }
 
@@ -212,13 +223,11 @@
       window.dispatchEvent(new Event("cartUpdated"));
     }
   }
-  $: quantitiesBySize = {};
-  $: {
-    for (const size of productsizes) {
-      quantitiesBySize[size.size_id] = getQuantityForSize(size.size_id);
-    }
-  }
 </script>
+
+{#if message}
+  <div class="stockmessage">{message}</div>
+{/if}
 
 {#if product && product.product_id}
   <div class="product-container">
@@ -279,12 +288,14 @@
       </div>
       {#if productsizes.length === 1}
         <div class="check">
-          <div class="arithmetic">
+          <div class="arithmetical">
             <button on:click={decrementQuantityLegacy} role>-</button>
             <span>{cartQuantity}</span>
-            <button on:click={incrementQuantityLegacy} role>+</button>
+            <button on:click={incrementQuantityLegacy} role class="increment"
+              >+</button
+            >
           </div>
-          <button class="incart" on:click={addToCartLegacy}>Add to Cart</button>
+          <button class="incarto" on:click={addToCartLegacy}>Add to Cart</button>
         </div>
       {:else}
         <button class="incart" on:click={openModal}>Add to Cart</button>
@@ -315,22 +326,29 @@
     role
   >
     <div class="modal-content">
-      <h2>Select Size</h2>
+      <div class="m-header">Please Select a Size</div>
       <div class="size-options">
         {#each productsizes as size}
           <div class="size-row">
             <span>{size.size} ({size.stock_quantity} left)</span>
             <div class="arithmetic">
-              <button on:click={() => decrementQuantity(size.size_id)}>-</button
+              <button
+                on:click={() => decrementQuantity(size.size_id)}
+                class="decrement">-</button
               >
-              <span>{quantitiesBySize[size.size_id]}</span>
-              <button on:click={() => incrementQuantity(size.size_id)}>+</button
+              <span>{getQuantityForSize(size.size_id)}</span>
+              <button
+                on:click={() => incrementQuantity(size.size_id)}
+                class="increment">+</button
               >
             </div>
           </div>
         {/each}
       </div>
-      <button on:click={closeModal}>Done</button>
+      <div class="m-closer">
+        <button on:click={toCart} class="tocart">Go to Cart</button>
+        <button on:click={closeModal} class="remove">Continue Shopping</button>
+      </div>
     </div>
   </dialog>
 {/if}
@@ -374,9 +392,18 @@
     {/if}
   </div>
 </div>
-<Cartadd />
 
 <style>
+  .stockmessage {
+    z-index: 2000;
+    background-color: orangered;
+    color: white;
+    font-size: 22px;
+    line-height: 34px;
+
+    text-align: center;
+    width: 100%;
+  }
   .product-container {
     padding: 10px 20px;
     display: flex;
@@ -479,7 +506,7 @@
   .arithmetic {
     display: inline-flex;
     width: fit-content;
-    padding: 15px 15px;
+    padding: 7px 15px;
     gap: 45px;
     align-items: center;
     border: 1px solid black;
@@ -489,6 +516,13 @@
     color: white;
     padding: 15px 99px;
     font-size: 14px;
+  }
+  .incarto{
+    background-color: black;
+    color: white;
+    padding: 15px 99px;
+    font-size: 14px;
+
   }
   .xtra {
     display: flex;
@@ -533,6 +567,7 @@
     padding-bottom: 4px;
     display: flex;
     gap: 15px;
+    box-sizing: border-box;
   }
   .farleft {
     flex: 0 0 15%;
@@ -556,11 +591,34 @@
     gap: 10px;
   }
   dialog {
-    max-width: 32em;
+    max-width: 350px;
     border-radius: 0.4em;
     border: none;
     padding: 0;
-    position: absolute;
+    position: fixed;
+    top: 10%;
+  }
+  .m-header {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 25px;
+  }
+
+  .increment {
+    background-color: orangered;
+    color: white;
+    font-weight: 700;
+  }
+  .decrement {
+    font-weight: 700;
+  }
+  .tocart {
+    background-color: transparent;
+    border: 1px solid orangered;
+  }
+  .remove {
+    background-color: transparent;
+    border: 1px solid orangered;
   }
   dialog::backdrop {
     background: rgba(0, 0, 0, 0.3);
@@ -569,7 +627,13 @@
     padding: 1em;
     display: flex;
     flex-direction: column;
-    gap: 0.75em;
+    gap: 20px;
+    top: 8px;
+  }
+  .m-closer {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
   }
   .size-options {
     display: flex;
@@ -589,10 +653,16 @@
     align-items: center;
     border: 1px solid black;
   }
-  .check .arithmetic {
-    padding: 15px 15px;
-    gap: 45px;
+  .arithmetical{
+    display: inline-flex;
+    width: fit-content;
+    padding: 5px 10px;
+    gap: 20px;
+    align-items: center;
+    border: 1px solid black;
+
   }
+
   button {
     background: #eee;
     border: none;
@@ -644,7 +714,36 @@
       flex: 0 0 100%;
     }
     .check {
-      display: none;
+      position: fixed;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 18px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      background-color: white;
+      height: 70px;
+      height:30px;
+      align-items: center;
+      
+      width: 100%;
+      justify-content: center;
+      background-color: white;
+    }
+    .incarto {
+      background-color: black;
+      color: white;
+      width: 65%;
+      font-size: 12px;
+      justify-self: baseline;
+      padding: 20px 0px;
+    }
+    .arithmetical{
+      width: 25%;
+      padding: 0 2px;
+    }
+    
     }
     .thumbnails button {
       height: 58px;
@@ -669,6 +768,9 @@
       max-height: 600px;
       border: 1px solid gray;
     }
+    .desc-review{
+      box-sizing: border-box;
+    }
     .desc-reviewbtn {
       border: none;
       background-color: transparent;
@@ -677,5 +779,9 @@
       line-height: 25px;
       color: rgb(136, 134, 134);
     }
-  }
+    .btn-section{
+      gap: 2px;
+    }
+  
+  
 </style>
