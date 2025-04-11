@@ -1,7 +1,11 @@
+
 <script>
     import Header from "$lib/header.svelte";
     import Fullviewproduct from "../../../lib/fullviewproduct.svelte";
     import Recentlyview from "../../../lib/recentlyview.svelte";
+    import Prefooter from "$lib/prefooter.svelte";
+    import Footer from "$lib/footer.svelte";
+
     
     
 
@@ -23,6 +27,8 @@
     {:else}
     <p>Loading product</p>
   {/if}
+  <Prefooter/>
+  <Footer/>
   
 
 

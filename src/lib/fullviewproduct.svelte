@@ -38,6 +38,7 @@
   let showModal = false;
   let dialog;
   let message;
+  let imessage;
 
   // Safe cart access
   function getCart() {
@@ -126,7 +127,7 @@
 
     if (currentQty >= sizeObj.stock_quantity) {
       message = `Only ${sizeObj.stock_quantity} ${sizeObj.size} available in stock`;
-      setTimeout(() => (message = ""), 3000);
+      setTimeout(() => (message = ""),1500);
       return;
     }
 
@@ -138,6 +139,8 @@
 
     cart = [...cart]; // Trigger reactivity
     localStorage.setItem("cart", JSON.stringify(cart));
+    imessage = "Product added succesfully to cart";
+    setTimeout(() => (imessage = ""), 1500);
     window.dispatchEvent(new Event("cartUpdated"));
     console.log("After increment, cart:", cart);
   }
@@ -183,7 +186,7 @@
 
     if (currentQty >= sizeObj.stock_quantity) {
       message = `Only ${sizeObj.stock_quantity} ${sizeObj.size} available in stock`;
-      setTimeout(() => (message = ""), 3000);
+      setTimeout(() => (message = ""), 1500);
 
       return;
     }
@@ -197,6 +200,8 @@
     cart = [...cart]; // Trigger reactivity
     cartQuantity = getQuantityForSize(sizeObj.size_id); // Sync UI
     localStorage.setItem("cart", JSON.stringify(cart));
+    imessage = "Product added succesfully to cart";
+    setTimeout(() => (imessage = ""), 1500);
     window.dispatchEvent(new Event("cartUpdated"));
   }
 
@@ -224,9 +229,11 @@
     }
   }
 </script>
-
+{#if imessage}
+<div class="imessage">{imessage}</div>
+{/if}
 {#if message}
-  <div class="stockmessage">{message}</div>
+<div class="stockermessage">{message}</div>
 {/if}
 
 {#if product && product.product_id}
@@ -287,6 +294,7 @@
         </div>
       </div>
       {#if productsizes.length === 1}
+     
         <div class="check">
           <div class="arithmetical">
             <button on:click={decrementQuantityLegacy} role>-</button>
@@ -295,10 +303,13 @@
               >+</button
             >
           </div>
-          <button class="incarto" on:click={addToCartLegacy}>Add to Cart</button>
+          <button class="incarto" on:click={addToCartLegacy}>Add to Cart</button
+          >
         </div>
       {:else}
-        <button class="incart" on:click={openModal}>Add to Cart</button>
+        <div class="check">
+          <button class="incart" on:click={openModal}>Add to Cart</button>
+        </div>
       {/if}
 
       <div class="xtra">
@@ -316,6 +327,7 @@
 {:else}
   <p>No product available</p>
 {/if}
+
 {#if productsizes.length > 1}
   <dialog
     bind:this={dialog}
@@ -326,7 +338,13 @@
     role
   >
     <div class="modal-content">
-      <div class="m-header">Please Select a Size</div>
+      {#if message}
+        <div class="stockmessage">{message}</div>
+      {/if}
+      <div class="m-h">
+        <div class="m-header">Please Select a Size</div>
+        <button on:click={closeModal}><Icon icon="mdi:close" /></button>
+      </div>
       <div class="size-options">
         {#each productsizes as size}
           <div class="size-row">
@@ -400,9 +418,28 @@
     color: white;
     font-size: 22px;
     line-height: 34px;
-
     text-align: center;
     width: 100%;
+  }
+  .imessage{
+    z-index: 2000;
+    background-color: green;
+    color: white;
+    font-size: 22px;
+    line-height: 34px;
+    text-align: center;
+    width: 100%
+
+  }
+  .stockermessage{
+    z-index: 2000;
+    background-color: orangered;
+    color: white;
+    font-size: 22px;
+    line-height: 34px;
+    text-align: center;
+    width: 100%;
+
   }
   .product-container {
     padding: 10px 20px;
@@ -517,12 +554,11 @@
     padding: 15px 99px;
     font-size: 14px;
   }
-  .incarto{
+  .incarto {
     background-color: black;
     color: white;
     padding: 15px 99px;
     font-size: 14px;
-
   }
   .xtra {
     display: flex;
@@ -591,12 +627,17 @@
     gap: 10px;
   }
   dialog {
-    max-width: 350px;
+    width: 400px;
     border-radius: 0.4em;
     border: none;
     padding: 0;
     position: fixed;
     top: 10%;
+  }
+  .m-h {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
   .m-header {
     font-size: 20px;
@@ -634,6 +675,7 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
+    justify-content: space-between;
   }
   .size-options {
     display: flex;
@@ -653,14 +695,13 @@
     align-items: center;
     border: 1px solid black;
   }
-  .arithmetical{
+  .arithmetical {
     display: inline-flex;
     width: fit-content;
     padding: 5px 10px;
     gap: 20px;
     align-items: center;
     border: 1px solid black;
-
   }
 
   button {
@@ -713,20 +754,22 @@
     .farleft {
       flex: 0 0 100%;
     }
+    dialog {
+      width: 85%;
+    }
     .check {
       position: fixed;
       display: flex;
       flex-direction: row;
-      align-items: center;
-      gap: 18px;
       position: fixed;
       bottom: 0;
       left: 0;
       background-color: white;
-      height: 70px;
-      height:30px;
+      height: 7%;
+      padding: 0px;
+
       align-items: center;
-      
+
       width: 100%;
       justify-content: center;
       background-color: white;
@@ -735,53 +778,73 @@
       background-color: black;
       color: white;
       width: 65%;
-      font-size: 12px;
-      justify-self: baseline;
-      padding: 20px 0px;
+      padding: 0px;
+      height: 100%;
+      font-size: 20px;
     }
-    .arithmetical{
-      width: 25%;
-      padding: 0 2px;
-    }
-    
-    }
-    .thumbnails button {
-      height: 58px;
-      width: 58px;
-
-      box-sizing: border-box;
-    }
-
-    .thumbnails button img {
-      height: 58px;
-      width: 58px;
-    }
-    .main-image {
+    .incart {
       width: 100%;
-      height: auto;
-      max-height: 500px;
-      object-fit: scale-down;
+      height: 100%;
+      font-size: 20px;
     }
-    .main-image img {
-      width: 100%;
-      height: auto;
-      max-height: 600px;
-      border: 1px solid gray;
-    }
-    .desc-review{
-      box-sizing: border-box;
-    }
-    .desc-reviewbtn {
-      border: none;
+    .arithmetical {
+      width: fit-content;
+      width: 35%;
+      height: 100%;
+      padding-left: 5px;
       background-color: transparent;
-      font-size: 17px;
-      font-weight: 500;
-      line-height: 25px;
-      color: rgb(136, 134, 134);
+      
+      padding: 0px 5px;
+      align-items: center;
+      box-sizing: border-box;
     }
-    .btn-section{
-      gap: 2px;
+    .stockermessage{
+      position: fixed;
+      bottom: 7%;
+      width: 100%;
+    }
+    .imessage{
+      position: fixed;
+      bottom: 7%;
+      width: 100%;
+
     }
   
-  
+  .thumbnails button {
+    height: 58px;
+    width: 58px;
+    box-sizing: border-box;
+  }
+
+  .thumbnails button img {
+    height: 58px;
+    width: 58px;
+  }
+  .main-image {
+    width: 100%;
+    height: auto;
+    max-height: 570px;
+    object-fit: scale-down;
+  }
+  .main-image img {
+    width: 100%;
+    height: auto;
+    max-height: 570px;
+    border: 1px solid gray;
+  }
+  .desc-review {
+    box-sizing: border-box;
+  }
+  .desc-reviewbtn {
+    border: none;
+    background-color: transparent;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 25px;
+    color: rgb(136, 134, 134);
+  }
+  .btn-section {
+    gap: 2px;
+  }
+}
 </style>
