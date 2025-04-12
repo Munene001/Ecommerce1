@@ -31,7 +31,7 @@
   
     function navigateToCheckout() {
       if (browser) {
-        goto("/checkout"); // Use SvelteKit navigation instead of window.location
+        goto("/cart"); // Use SvelteKit navigation instead of window.location
       }
     }
   </script>
@@ -55,13 +55,13 @@
     }
     .cart-count {
       position: absolute;
-      top: -5px;
+      top: -15px;
       right: -5px;
       background-color: red;
       color: white;
-      border-radius: 50%;
-      padding: 2px 6px;
-      font-size: 12px;
+      border-radius: 70%;
+      padding: 1px 3px;
+      font-size: 16px;
     }
     a {
       background: none;
