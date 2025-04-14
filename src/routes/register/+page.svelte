@@ -1,6 +1,7 @@
 <script>
   import Header from "../../lib/header.svelte";
   import { goto } from "$app/navigation";
+  import { browser } from "$app/environment";
   import Footer from "../../lib/footer.svelte";
   import Prefooter from "../../lib/prefooter.svelte";
   import Icon from "@iconify/svelte";
@@ -13,6 +14,21 @@
   let isLoading = false;
   let showPassword = false;
   let showConfirmPassword = false;
+  
+
+  const urlParams = browser ? new URLSearchParams(window.location.search) : null;
+  let redirectTo = urlParams?.get("redirect") || "/account";
+  // Optionally check referrer for redirect (e.g., from /login?redirect=/checkout)
+  if (browser && !urlParams?.get("redirect") && document.referrer) {
+    try {
+      const referrerUrl = new URL(document.referrer);
+      if (referrerUrl.pathname === "/login") {
+        redirectTo = referrerUrl.searchParams.get("redirect");
+      }
+    } catch (e) {
+      console.error("Error parsing referrer:", e);
+    }
+  }
 
   function toggleNewPassword() {
     showPassword = !showPassword;
@@ -48,7 +64,7 @@
       });
 
       if (response.ok) {
-        goto("/login");
+        goto(`/login?redirect=${encodeURIComponent(redirectTo)}`);
       } else {
         const errorData = await response.json();
         errorMessage = errorData.message || "Registration failed";

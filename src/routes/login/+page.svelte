@@ -11,15 +11,18 @@
   let errorMessage = "";
   let showPassword = false;
 
+  const urlParams = browser
+    ? new URLSearchParams(window.location.search)
+    : null;
+  let redirectTo = urlParams?.get("redirect") || "/account";
 
   function togglePassword() {
     showPassword = !showPassword;
   }
 
-  function fpage(){
+  function fpage() {
     goto("/forgotpassword");
   }
-
 
   async function handleLogin() {
     errorMessage = "";
@@ -37,8 +40,12 @@
         const data = await response.json();
         if (browser) {
           localStorage.setItem("authToken", data.token);
+          const target = redirectTo.startsWith("/") ? redirectTo : "/account";
+          if (redirectTo) {
+            sessionStorage.setItem("originalRedirect", redirectTo);
+          }
+          await goto(target);
         }
-        goto("/account");
       } else {
         const errorData = await response.json();
         errorMessage = errorData.message || "Login failed";
@@ -68,7 +75,14 @@
           placeholder=" Password"
           class="password-input"
         />
-        <span class="toggle-icon" on:click={togglePassword} tabindex="0" role="button"  on:keydown={e => e.key === 'Enter' || e.key === ' ' ? toggleNewPassword() : null}>
+        <span
+          class="toggle-icon"
+          on:click={togglePassword}
+          tabindex="0"
+          role="button"
+          on:keydown={(e) =>
+            e.key === "Enter" || e.key === " " ? toggleNewPassword() : null}
+        >
           {#if showPassword}
             <Icon icon="akar-icons:eye-open" />
           {:else}
@@ -76,7 +90,7 @@
           {/if}
         </span>
       </div>
-     
+
       <div class="butter">
         <button type="submit" class="butter1">Login</button>
         <button class="butter2" on:click={fpage}>Forgot Password?</button>
@@ -85,7 +99,7 @@
         <p style="color: red;" class="error">{errorMessage}</p>
       {/if}
       <div class="signup">
-        Dont have an account?<a href="/register" aria-label="register">
+        Dont have an account?<a href={`/register?redirect=${encodeURIComponent(redirectTo)}`} aria-label="register">
           Sign Up</a
         >
       </div>
@@ -98,7 +112,6 @@
     </div>
   </div>
 </div>
-
 
 <Prefooter />
 <Footer />
@@ -152,7 +165,7 @@
     border-radius: 6px;
     font-size: 16px;
   }
-  .password-container{
+  .password-container {
     align-self: center;
     width: 75%;
     position: relative;
@@ -185,7 +198,7 @@
     border: none;
     background-color: transparent;
   }
-  .error{
+  .error {
     align-self: center;
   }
   .signup {
@@ -214,18 +227,16 @@
     line-height: 21px;
     color: rgb(0, 0, 0);
   }
-  @media (max-width:768px){
-
-    .container{
+  @media (max-width: 768px) {
+    .container {
       padding: 30px 0px;
       box-sizing: border-box;
     }
-   .template{
-    width: 95%;
-    
-   }
-   .butter{
-    gap: 5px;
-   }
+    .template {
+      width: 95%;
+    }
+    .butter {
+      gap: 5px;
+    }
   }
 </style>

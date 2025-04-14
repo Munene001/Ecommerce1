@@ -4,6 +4,7 @@
   import Icon from "@iconify/svelte";
   import { goto } from "$app/navigation";
   import Header from "../../lib/header.svelte";
+  import {openProductPage} from "../../lib/productutil.js";
 
   let cart = [];
   let products = [];
@@ -157,7 +158,7 @@
   // Navigate to checkout
   function proceedToCheckout() {
     if (browser && totalItems > 0) {
-      goto("/checkout");
+      goto("/login?redirect=/checkout");
     }
   }
 
@@ -173,6 +174,8 @@
       }
     };
   });
+
+ 
 </script>
 
 <Header />
@@ -185,8 +188,10 @@
     {msg.text}
   </div>
 {/each}
+<div class="cart-page" >
+  
 
-<div class="cart-page">
+<div class="cart-uno">
   <h1>Your Cart</h1>
   {#if cart.length === 0}
     <p>Your cart is empty.</p>
@@ -196,8 +201,8 @@
   {:else}
     <div class="cart-items">
       {#each products as product (product.product_id + product.size_id)}
-        <div class="cart-item">
-          <div class="item-image">
+        <div class="cart-item" >
+          <div class="item-image"  on:click={openProductPage(product.product_id)} role>
             <img
               src={product.images[0]?.imageurl || "/fallback-image.jpg"}
               alt={product.productname || "Product"}
@@ -205,7 +210,7 @@
             />
           </div>
           <div class="item-details">
-            <h2>{product.productname || "Unknown Product"}</h2>
+            <h2  on:click={openProductPage(product.product_id)} role>{product.productname || "Unknown Product"}</h2>
             <p>Size: {product.size}</p>
             <p>
               Price: ${product.discountprice || product.price || 0}
@@ -243,6 +248,9 @@
         </div>
       {/each}
     </div>
+    {/if}
+    </div>
+    
     <div class="cart-summary">
       <h3>Summary</h3>
       <p>Total Items: {totalItems}</p>
@@ -262,20 +270,31 @@
         Continue Shopping
       </button>
     </div>
-  {/if}
+  
+
 </div>
+
 
 <style>
   .cart-page {
     padding: 20px;
-    max-width: 1200px;
     margin: 0 auto;
-    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+    
+  }
+  .cart-uno{
+    flex:  0 0 60%;
+
   }
   .cart-items {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    
   }
   .cart-item {
     display: flex;
@@ -357,6 +376,9 @@
     flex-direction: column;
     gap: 10px;
     background: #fafafa;
+    flex: 0 0 30%;
+    align-self: flex-start;
+    
   }
   .cart-summary h3 {
     margin: 0;

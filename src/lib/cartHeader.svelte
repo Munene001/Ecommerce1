@@ -36,40 +36,37 @@
     }
   </script>
   
-  <div class="cart">
-    <a href="/checkout" aria-label="Go to checkout" on:click|preventDefault={navigateToCheckout}>
-      <Icon icon="raphael:cart" />
+  <div class="cart" onclick={navigateToCheckout} role aria-label="cart">
+ 
+     <div ><Icon icon="raphael:cart" style="height:25px; width:25px" /></div>
+     <div class="cart-t">Cart</div>
+    
       {#if totalItems > 0}
-        <span class="cart-count">{totalItems}</span>
+        <button class="cart-count">{totalItems}</button>
       {/if}
-    </a>
+    
   </div>
   
   <style>
     .cart {
-      font-size: 25px;
-      margin-left: 90px;
-      line-height: 32px;
+      display: flex;
+      flex-direction: column;
       cursor: pointer;
       position: relative;
     }
     .cart-count {
       position: absolute;
-      top: -15px;
-      right: -5px;
-      background-color: red;
+      top: -10px;
+      right: -10px;
+      background-color: orangered;
       color: white;
-      border-radius: 70%;
-      padding: 1px 3px;
-      font-size: 16px;
-    }
-    a {
-      background: none;
+      border-radius: 50%;
+      font-size: 14px;
       border: none;
-      cursor: pointer;
-      padding: 5px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
+
     }
+    .cart-t{
+      font-size: 14px
+    }
+   
   </style>

@@ -5,9 +5,9 @@
   import { openProductPage } from "./productutil";
   import CartHeader from "./cartHeader.svelte";
   import Accountmodal from "./accountmodal.svelte";
- 
+  import WishlistHeader from "./wishlistHeader.svelte";
 
-  function navigateToAccount(){
+  function navigateToAccount() {
     goto("/account");
   }
 
@@ -213,14 +213,9 @@
     </div>
   </div>
   <div class="right">
-    <CartHeader/>
-    <div class="wishlist">
-      <a href="/wishlist" aria-label="Go to wishlist">
-        <Icon icon="tabler:heart" />
-      </a>
-    </div>
-    <Accountmodal/>
-  
+    <WishlistHeader />
+    <CartHeader />
+    <Accountmodal />
   </div>
 </div>
 <div class="route">
@@ -253,7 +248,7 @@
     <Icon icon="mdi-light:menu" />
   </button>
   <div class="head"><h1>Cloyta</h1></div>
- <CartHeader/>
+  <CartHeader />
 </div>
 {#if showModal}
   <div class="pops">
@@ -341,10 +336,11 @@
     background-color: #ffffff;
     display: flex;
     align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
   }
-  .right a {
-    color: black;
-  }
+
   .search-container {
     display: flex;
     align-items: center;
@@ -464,13 +460,8 @@
     font-size: 20px;
     margin-left: 5px;
   }
- 
-  .wishlist {
-    font-size: 27px;
-    margin-left: 30px;
-    line-height: 32px;
-    cursor: pointer;
-  }
+
+
 
   .route {
     height: 56px;
@@ -518,7 +509,7 @@
       display: none;
     }
     .mainheadermobile {
-      height: 56px;
+      height: 66px;
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -533,7 +524,7 @@
       outline: none;
       cursor: pointer;
     }
-   
+
     .head {
       font-size: 16px;
       line-height: 24px;
