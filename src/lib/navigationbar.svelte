@@ -36,12 +36,6 @@
       >search</span
     ></button
   >
-  <button onclick={toggleFilter}
-    ><Icon
-      icon="material-symbols-light:filter-list"
-      style="font-size:29px;"
-    /><span>filter</span></button
-  >
   <button onclick={navigateToAccount}
     ><Icon icon="bi:person" style="font-size:28px" /><span>account</span
     ></button

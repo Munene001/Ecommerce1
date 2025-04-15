@@ -1,14 +1,12 @@
 <script>
-  import Header from "$lib/header.svelte";
+  
   import bgImage from "$lib/images/ecomabout3.jpg?enhanced";
   import cgImage from "$lib/images/ecomabout2.jpg?enhanced";
   import Icon from "@iconify/svelte";
-  import Preefooter from "$lib/prefooter.svelte";
-  import Navigationbar from "$lib/navigationbar.svelte";
-  import Footer from "$lib/footer.svelte";
+
 </script>
 
-<Header />
+
 <Navigationbar/>
 <div class="aboutuno">
   <enhanced:img src={bgImage} alt="background image" class="background-img">
@@ -81,8 +79,7 @@
   </enhanced:img></div>
   
 </div>
-<Preefooter/>
-<Footer/>
+
 
 <style>
   :global(body) {

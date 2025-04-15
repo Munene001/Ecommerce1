@@ -1,9 +1,16 @@
 <script>
   import Icon from "@iconify/svelte";
   import { goto } from "$app/navigation";
+  import { update } from "lodash-es";
   let showModal = false;
   let dialog;
+  
 
+
+  export let isAuthenticated = false;
+  export let username = null;
+
+  
   function openModal() {
     if (!showModal) {
       showModal = true;
@@ -31,7 +38,6 @@
 <!-- Trigger: Account Icon -->
 <div
   on:click={openModal}
-  on:mouseover={openModal}
   on:focus={openModal}
   style="cursor: pointer; display: inline-block;"
   role
@@ -39,7 +45,15 @@
 >
   <!-- Replace with your actual icon -->
   <div><Icon icon="line-md:account" style="height:25px; width:25px" /></div>
-  <div class="ocon-t">Account</div>
+  <div class="ocon-t">
+    {#if isAuthenticated && username}
+    {username}
+    {:else if isAuthenticated}
+    Account
+    {:else}
+    Signup
+    {/if}
+  </div>
 </div>
 
 <!-- Modal -->

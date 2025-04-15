@@ -1,13 +1,11 @@
 <script>
-  import Header from "$lib/header.svelte";
+  
   import coImage from "$lib/images/ecomabout.jpg?enhanced";
   import Icon from "@iconify/svelte";
-  import Preefooter from "$lib/prefooter.svelte";
-  import Navigationbar from "$lib/navigationbar.svelte";
-  import Footer from "$lib/footer.svelte";
+  
 </script>
 
-<Header />
+
 <Navigationbar/>
 <div class="contactuno">
   <enhanced:img src={coImage} alt="background image" class="back-img">
@@ -82,8 +80,7 @@
     referrerpolicy="no-referrer-when-downgrade"
   ></iframe>
 </div>
-<Preefooter/>
-<Footer/>
+
 
 <style>
   :global(body) {

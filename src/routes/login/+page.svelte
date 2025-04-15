@@ -1,9 +1,9 @@
 <script>
   import { goto } from "$app/navigation";
   import { browser } from "$app/environment";
-  import Header from "../../lib/header.svelte";
-  import Footer from "../../lib/footer.svelte";
-  import Prefooter from "../../lib/prefooter.svelte";
+  
+  
+  
   import Icon from "@iconify/svelte";
 
   let email = "";
@@ -40,6 +40,7 @@
         const data = await response.json();
         if (browser) {
           localStorage.setItem("authToken", data.token);
+          sessionStorage.removeItem('originalRedirect');
           const target = redirectTo.startsWith("/") ? redirectTo : "/account";
           if (redirectTo) {
             sessionStorage.setItem("originalRedirect", redirectTo);
@@ -56,7 +57,7 @@
   }
 </script>
 
-<Header />
+
 <div class="container">
   <div class="template">
     <div class="greener">
@@ -113,8 +114,8 @@
   </div>
 </div>
 
-<Prefooter />
-<Footer />
+
+
 
 <style>
   .container {

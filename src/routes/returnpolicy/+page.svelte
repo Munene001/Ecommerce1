@@ -1,10 +1,7 @@
 <script>
-    import Header from "$lib/header.svelte";
-    import Prefooter from "$lib/prefooter.svelte";
-    import Footer from "$lib/footer.svelte";
-    import Navigationbar from "$lib/navigationbar.svelte";
+  
 </script>
-<Header/>
+
 <div class = "returns">
 <span><b>Overview<b></span>
     <br>
@@ -33,9 +30,7 @@
 
 
 </div>
-<Prefooter/>
-<Footer/>
-<Navigationbar/>
+
 <style>
     .returns{
         padding: 0 13px;

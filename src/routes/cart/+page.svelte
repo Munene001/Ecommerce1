@@ -3,7 +3,7 @@
   import { browser } from "$app/environment";
   import Icon from "@iconify/svelte";
   import { goto } from "$app/navigation";
-  import Header from "../../lib/header.svelte";
+  
   import {openProductPage} from "../../lib/productutil.js";
 
   let cart = [];
@@ -178,7 +178,7 @@
  
 </script>
 
-<Header />
+
 {#if error}
   <div class="error-message">{error}</div>
 {/if}

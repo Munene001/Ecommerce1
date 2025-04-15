@@ -7,6 +7,9 @@
   import Accountmodal from "./accountmodal.svelte";
   import WishlistHeader from "./wishlistHeader.svelte";
 
+  export let isAuthenticated = false;
+  export let username = null;
+
   function navigateToAccount() {
     goto("/account");
   }
@@ -215,7 +218,11 @@
   <div class="right">
     <WishlistHeader />
     <CartHeader />
-    <Accountmodal />
+    <Accountmodal 
+    {isAuthenticated} 
+    {username} 
+  />
+    
   </div>
 </div>
 <div class="route">

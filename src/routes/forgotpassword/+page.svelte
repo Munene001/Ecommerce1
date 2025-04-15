@@ -1,8 +1,6 @@
 <script>
-  import Header from "../../lib/header.svelte";
-  import Prefooter from "../../lib/prefooter.svelte";
-  import Footer from "../../lib/footer.svelte";
-  import Navigationbar from "../../lib/navigationbar.svelte"
+  
+
   let email = "";
   let message = "";
   let isLoading = false;
@@ -34,7 +32,7 @@
   }
 </script>
 
-<Header />
+
 <div class="container">
   <div class="template">
     <div class="greener">
@@ -58,9 +56,7 @@
     </form>
   </div>
 </div>
-<Prefooter />
-<Footer />
-<Navigationbar/>
+
 
 <style>
   .container {

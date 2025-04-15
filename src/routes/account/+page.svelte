@@ -1,7 +1,7 @@
 <script>
     import { goto } from "$app/navigation";
     import { browser } from "$app/environment"; 
-    import Header from "../../lib/header.svelte";
+    
   
     let token = browser ? localStorage.getItem("authToken") || "" : "";
     let user = null;
@@ -45,7 +45,7 @@
       fetchUser();
     }
   </script>
-  <Header/>
+  
   
   {#if error}
     <p style="color: red;">{error}</p>

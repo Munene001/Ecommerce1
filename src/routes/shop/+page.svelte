@@ -1,9 +1,8 @@
 <script>
-  import Header from "$lib/header.svelte";
+  
   import Productminiview from "$lib/productminiview.svelte";
   import Navigationbar from "$lib/navigationbar.svelte";
-  import Preefooter from "$lib/prefooter.svelte";
-  import Footer from "$lib/footer.svelte";
+  
   import Icon from "@iconify/svelte";
   import Filter from "../../lib/filter.svelte";
   import { onMount } from "svelte";
@@ -108,7 +107,7 @@
   }
 </script>
 
-<Header />
+
 
 <div class="shoping">
   <!-- Filter Component -->
@@ -180,8 +179,7 @@
 </div>
 
 <Navigationbar {filterVisible} toggleFilterCallback={toggleFilter} />
-<Preefooter />
-<Footer />
+
 
 <style>
   .shoping {

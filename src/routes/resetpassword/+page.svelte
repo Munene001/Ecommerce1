@@ -1,8 +1,5 @@
 <script>
-  import Header from "../../lib/header.svelte";
-  import Prefooter from "../../lib/prefooter.svelte";
-  import Footer from "../../lib/footer.svelte";
-  import Navigationbar from "../../lib/navigationbar.svelte";
+
   import { page } from "$app/stores";
   import Icon from "@iconify/svelte";
 
@@ -58,7 +55,7 @@
   }
 </script>
 
-<Header />
+
 
 <div class="container">
   <!--{#if !token || !email}
@@ -82,7 +79,7 @@
           placeholder="New Password"
           class="password-input"
         />
-        <span class="toggle-icon" on:click={toggleNewPassword}>
+        <span class="toggle-icon" on:click={toggleNewPassword} role>
           {#if showNewPassword}
             <Icon icon="akar-icons:eye-open" />
           {:else}
@@ -100,7 +97,7 @@
           placeholder="Confirm Password"
           class="password-input"
         />
-        <span class="toggle-icon" on:click={toggleConfirmPassword}>
+        <span class="toggle-icon" on:click={toggleConfirmPassword} role>
           {#if showConfirmPassword}
             <Icon icon="akar-icons:eye-open" />
           {:else}
@@ -120,9 +117,7 @@
   </div>
   <!--{/if}-->
 </div>
-<Prefooter />
-<Footer />
-<Navigationbar />
+
 
 <style>
   .container {

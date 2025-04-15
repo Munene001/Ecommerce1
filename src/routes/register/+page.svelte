@@ -1,9 +1,8 @@
 <script>
-  import Header from "../../lib/header.svelte";
+  
   import { goto } from "$app/navigation";
   import { browser } from "$app/environment";
-  import Footer from "../../lib/footer.svelte";
-  import Prefooter from "../../lib/prefooter.svelte";
+ 
   import Icon from "@iconify/svelte";
 
   let username = "";
@@ -78,7 +77,7 @@
   }
 </script>
 
-<Header />
+
 <div class="container">
   <div class="template">
     <div class="greener">
@@ -151,8 +150,7 @@
 {#if errorMessage}
   <p style="color: red;">{errorMessage}</p>
 {/if}
-<Prefooter />
-<Footer />
+
 
 <style>
   .container {

@@ -1,6 +1,6 @@
 <script>
-  import Header from "$lib/header.svelte";
-  import Navigationbar from "$lib/navigationbar.svelte";
+  
+  
   import Icon from "@iconify/svelte";
   import { debounce } from "lodash-es";
   import { openProductPage } from "../../lib/productutil.js";
@@ -42,9 +42,10 @@
   }, 300);
 </script>
 
-<Header />
+
 <div class="quiz">What are you looking for?</div>
 <div class="sear">
+  <div class="searchicon">
   <input
     type="text"
     bind:this={input}
@@ -55,6 +56,7 @@
   <button onclick={handleSearch}
     ><Icon icon="iconamoon:search-thin" style="font-size:22px" /></button
   >
+  </div>
   {#if searchResults.length > 0}
     <div class="search-results">
       {#each searchResults as result}
@@ -93,7 +95,7 @@
   {/if}
 </div>
 
-<Navigationbar />
+
 
 <style>
   :global(body) {
@@ -112,19 +114,21 @@
     padding: 0px 13px;
     margin-top: 18px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     position: relative;
+    height: 100vh;
+  }
+  .searchicon{
+    display: flex;
+    flex-direction: row;
   }
   .sear .search-results {
-    position: absolute;
-    width: 100%;
-    top: 100%;
-    left: 0;
-    right: 0;
+    position: relative;
     box-sizing: border-box;
     padding: 3px 15px;
     max-height: 500px;
     overflow-y: auto;
+   
   }
   .sear .no-results {
     position: absolute;
@@ -139,6 +143,7 @@
     display: flex;
     flex-direction: row;
     height: 70px;
+    border-bottom: 1px solid gray;
   }
   .resultimg {
     flex: 10%;
